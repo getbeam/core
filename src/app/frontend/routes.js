@@ -4,7 +4,7 @@ import { Router } from 'express';
 const routes = Router();
 
 routes.get('/', (req, res) => {
-  res.render('index');
+  res.marko('tmpl', { hello: 'world' });
 });
 
 export default routes;

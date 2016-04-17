@@ -4,6 +4,9 @@ dist
 # Environment Variables
 .env
 
+# Precompiled marko views
+*.marko.js
+
 # Misc
 node_modules
 npm-debug.log
