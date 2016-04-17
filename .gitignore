@@ -1,0 +1,9 @@
+# Transpiled files
+dist
+
+# Environment Variables
+.env
+
+# Misc
+node_modules
+npm-debug.log
