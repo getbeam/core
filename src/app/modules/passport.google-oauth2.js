@@ -9,6 +9,11 @@ const strategy = new Strategy(
     passReqToCallback: true
   },
   (req, accessToken, refreshToken, profile, next) => {
+    // # Callback of Google OAuth2.0
+    // Check if the user is already registered and pass the user to the
+    // next callback.
+    // If user is not registered, create him!
+
     User.findOne({ googleId: profile._json.id })
       .then(foundUser => {
         if (foundUser) {

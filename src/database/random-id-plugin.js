@@ -2,12 +2,6 @@
  * Adds an unique auto-generated random ID to the schema.
  * This Plugin does NOT automatically add the id-field to the schema,
  * because I like having an overview about all fields in the schema definition.
- */
-
-/**
- * Adds an unique auto-generated random ID to the schema.
- * This Plugin does NOT automatically add the id-field to the schema,
- * because I like having an overview about all fields in the schema definition.
  * @param  {mongoose.Schema} schema Will be automatically added to the schema.
  * @param  {Object} options { padding: Number, max: Number, min: Number }
  */

@@ -1,5 +1,10 @@
 /* eslint-disable */
 
+// Startup chain:
+//  - register .env
+//  - connecting to the database
+//  - starting the server 
+
 require('dotenv').config();
 
 const app = require('./app').default;
