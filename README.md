@@ -1,6 +1,6 @@
-# sssnap
+# beam
 
-> sssnap core
+> beam core
 
 ```
 // TODO: Write readme

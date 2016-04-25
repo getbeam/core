@@ -7,7 +7,7 @@ const options = {
 
 export function connect() {
   return new Promise((resolve, reject) => {
-    db.connect('mongodb://localhost/sssnap', options);
+    db.connect('mongodb://localhost/beam-dev', options);
     db.connection
       .on('error', reject)
       .once('open', resolve);

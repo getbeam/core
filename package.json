@@ -1,8 +1,8 @@
 {
-  "name": "sssnap",
+  "name": "beam",
   "version": "0.0.1",
   "private": true,
-  "description": "sssnap core",
+  "description": "beam core",
   "main": "dist/index.js",
   "scripts": {
     "start": "NODE_ENV=development babel-watch --ignore *.marko.js --exclude *.marko.js src/index.js",
