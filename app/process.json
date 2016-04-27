@@ -1,0 +1,13 @@
+{
+  "apps" : [
+    {
+      "script": "src/index.js",
+      "node_args" : "--harmony",
+      "watch": ["src", ".env"],
+      "ignore_watch": ["node_modules"],
+      "env": {
+        "NODE_ENV": "development",
+      }
+    }
+  ]
+}
