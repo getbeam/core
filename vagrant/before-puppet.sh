@@ -13,6 +13,7 @@ fi
 mkdir -p /etc/puppet/modules
 puppet module install puppet-nodejs
 puppet module install puppetlabs-apt
+puppet module install puppetlabs-postgresql
 
 # Install nodejs if it's not there
 if ! type "$foobar_command_name" > /dev/null; then

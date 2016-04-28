@@ -17,9 +17,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ]
   end
 
-  config.vm.synced_folder ".", "/opt/beam", type: 'rsync',
-    rsync__args: ["-a"],
-    rsync__exclude: [".git/", ".vagrant/", "vagrant", "app/node_modules"]
+  config.vm.synced_folder "./app", "/opt/beam/app", type: "rsync",
+    rsync__args: ["-a"]
+
+  config.vm.synced_folder "./node", "/opt/beam/node", type: "nfs"
+
 
   # Configure the window for gatling to coalesce writes.
   if Vagrant.has_plugin?("vagrant-gatling-rsync")
@@ -40,5 +42,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell", path: "vagrant/after-puppet.sh"
 
-  config.vm.provision "shell", path: "vagrant/startup.sh", run: "always", privileged: false
+  config.vm.provision "shell", path: "vagrant/startup.sh",
+    run: "always", privileged: false
 end

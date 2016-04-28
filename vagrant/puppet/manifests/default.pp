@@ -46,3 +46,10 @@ package { 'pm2':
   ensure   => 'present',
   provider => 'npm',
 }
+
+class { 'postgresql::server': }
+
+postgresql::server::db { 'beam':
+  user     => 'beam',
+  password => postgresql_password('beam', 'securepassword'),
+}
