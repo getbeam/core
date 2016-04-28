@@ -43,13 +43,13 @@ file { 'default-nginx-enable':
 }
 
 package { 'pm2':
-  ensure   => 'present',
+  ensure => 'present',
   provider => 'npm',
 }
 
 class { 'postgresql::server': }
 
 postgresql::server::db { 'beam':
-  user     => 'beam',
+  user => 'beam',
   password => postgresql_password('beam', 'securepassword'),
 }
