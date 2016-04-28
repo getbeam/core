@@ -17,11 +17,11 @@ service { 'nginx':
 }
 
 file { 'vagrant-nginx':
-  path => '/etc/nginx/sites-available/vagrant',
+  path => '/etc/nginx/sites-available/beam.local',
   ensure => file,
   replace => true,
   require => Package['nginx'],
-  source => 'puppet:///modules/nginx/vagrant',
+  source => 'puppet:///modules/nginx/beam.local',
   notify => Service['nginx']
 }
 
@@ -32,8 +32,8 @@ file { 'default-nginx-disable':
 }
 
 file { 'default-nginx-enable':
-  path => '/etc/nginx/sites-enabled/vagrant',
-  target => '/etc/nginx/sites-available/vagrant',
+  path => '/etc/nginx/sites-enabled/beam.local',
+  target => '/etc/nginx/sites-available/beam.local',
   ensure => link,
   notify => Service['nginx'],
   require => [
