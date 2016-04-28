@@ -1,5 +1,20 @@
 #!/bin/sh
 
+# Setup SSL Certificate
+if [ ! -e /tmp/ssl-created ]; then
+  mkdir -p /etc/ssl/beam.local
+  openssl genrsa -out "/etc/ssl/beam.local/beam.local.key" 2048
+  openssl req -new -key "/etc/ssl/beam.local/beam.local.key" \
+    -out "/etc/ssl/beam.local/beam.local.csr" \
+    -subj "/C=Germany/ST=NRW/L=Cologne/O=Beam/CN=beam.local"
+  openssl x509 -req -days 999 \
+    -in "/etc/ssl/beam.local/beam.local.csr" \
+    -signkey "/etc/ssl/beam.local/beam.local.csr" \
+    -out "/etc/ssl/beam.local/beam.local.crt"
+
+  touch /tmp/ssl-created
+fi
+
 # Upgdate puppet to a more recent version
 if [ ! -e /tmp/puppet-updated ]; then
   wget -O /tmp/puppetlabs-release-precise.deb http://apt.puppetlabs.com/puppetlabs-release-precise.deb
@@ -16,8 +31,9 @@ puppet module install puppetlabs-apt
 puppet module install puppetlabs-postgresql
 
 # Install nodejs if it's not there
-if ! type "$foobar_command_name" > /dev/null; then
+if [ ! -e /tmp/nodejs600-installed ]; then
   sudo apt-get install -y curl
   curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   sudo apt-get install -y nodejs
+  touch /tmp/nodejs600-installed
 fi

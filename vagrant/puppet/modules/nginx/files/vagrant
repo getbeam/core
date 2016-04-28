@@ -4,9 +4,20 @@ upstream app_beam {
 }
 
 server {
-    listen 0.0.0.0:80;
-    server_name beam.local beam;
-    access_log /var/log/nginx/beam.log;
+    listen 80;
+    server_name beam.local;
+    access_log off;
+
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name beam.local;
+    access_log off;
+
+    ssl_certificate /etc/ssl/beam.local/beam.local.crt;
+    ssl_certificate_key /etc/ssl/beam.local/beam.local.crt;
 
     location / {
       proxy_set_header X-Real-IP $remote_addr;

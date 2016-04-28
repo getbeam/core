@@ -32,15 +32,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Don't automatically sync machine.
   config.gatling.rsync_on_startup = false
 
-  config.vm.provision "shell", path: "vagrant/before-puppet.sh"
+  config.vm.provision "shell", path: "vagrant/install.sh"
 
   config.vm.provision "puppet" do |puppet|
     puppet.manifests_path = "vagrant/puppet/manifests"
     puppet.manifest_file  = "default.pp"
     puppet.module_path = "vagrant/puppet/modules"
   end
-
-  config.vm.provision "shell", path: "vagrant/after-puppet.sh"
 
   config.vm.provision "shell", path: "vagrant/startup.sh",
     run: "always", privileged: false

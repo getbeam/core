@@ -2,6 +2,7 @@
 
 cd /opt/beam/app/
 echo "Checking npm modules..."
+
 npm install
 
 echo "Starting beam in pm2!"
