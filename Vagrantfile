@@ -17,20 +17,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ]
   end
 
-  config.vm.synced_folder "./app", "/opt/beam/app", type: "rsync",
-    rsync__args: ["-a"]
-
-  config.vm.synced_folder "./node", "/opt/beam/node", type: "nfs"
-
-
-  # Configure the window for gatling to coalesce writes.
-  if Vagrant.has_plugin?("vagrant-gatling-rsync")
-    config.gatling.latency = 0.2
-    config.gatling.time_format = "%H:%M:%S"
-  end
-
-  # Don't automatically sync machine.
-  config.gatling.rsync_on_startup = false
+  config.vm.synced_folder "./", "/opt/beam", type: "nfs"
 
   config.vm.provision "shell", path: "vagrant/install.sh"
 

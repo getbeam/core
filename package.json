@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "description": "beam core",
-  "main": "dist/index.js",
+  "main": "app/src/index.js",
   "scripts": {
     "start": "pm2 start process.json",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,7 +15,8 @@
     "eslint": "^2.8.0",
     "eslint-config-airbnb": "^7.0.0",
     "eslint-plugin-jsx-a11y": "^0.6.2",
-    "eslint-plugin-react": "^4.3.0"
+    "eslint-plugin-react": "^4.3.0",
+    "sshconf-stream": "^0.1.2"
   },
   "dependencies": {
     "body-parser": "^1.15.0",

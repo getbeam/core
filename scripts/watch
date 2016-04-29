@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+
+/* eslint-disable */
+
+var chokidar = require('chokidar');
+var SSH = require('simple-ssh');
+var sshconf = require('sshconf-stream');
+var path = require('path');
+var fs = require('fs');
+
+var watcher = chokidar.watch(path.resolve(__dirname, '..', 'app/'));
+var sshhost;
+
+watcher
+  .on('change', restart);
+
+function restart() {
+  console.log('restart');
+  var ssh = new SSH({
+    host: sshhost.HostName[0],
+    user: sshhost.User[0],
+    port: +sshhost.Port[0],
+    key: fs.readFileSync(sshhost.IdentityFile[0], 'utf8')
+  });
+
+  ssh.exec('pm2 reload 0', {
+    out: function (stdout) { console.log(stdout) }
+  }).start();
+}
+
+fs.createReadStream(path.resolve(process.env.HOME, '.ssh', 'config'), 'utf8')
+  .pipe(sshconf.createParseStream())
+  .on('data', function (host) {
+    if (host.type === 'host' && host.keywords.Host[0] === 'beam') {
+      sshhost = host.keywords;
+    }
+  });
+
+/*
+
+ssh.on('ready', function () {
+  ssh.exec('echo "hello"', {
+    out: console.log.bind(console)
+  }).start();
+  console.log('Connected to box.');
+});
+
+function restart() {
+  console.log('perform restart...');
+  ssh.exec('pm2 reload 0').start();
+}
+*/
