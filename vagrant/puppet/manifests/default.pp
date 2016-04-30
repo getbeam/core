@@ -31,6 +31,10 @@ file { 'default-nginx-disable':
   require => Package['nginx'],
 }
 
+file { '/etc/ssl/beam.local':
+  ensure => 'directory',
+}
+
 file { 'ssl-certificate':
   path => '/etc/ssl/beam.local/beam.local.crt',
   ensure => file,
