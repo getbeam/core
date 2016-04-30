@@ -6,6 +6,7 @@
   "main": "app/src/index.js",
   "scripts": {
     "start": "pm2 start process.json",
+    "bootstrap": "scripts/install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
