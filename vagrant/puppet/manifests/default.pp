@@ -22,13 +22,30 @@ file { 'vagrant-nginx':
   replace => true,
   require => Package['nginx'],
   source => 'puppet:///modules/nginx/beam.local',
-  notify => Service['nginx']
+  notify => Service['nginx'],
 }
 
 file { 'default-nginx-disable':
   path => '/etc/nginx/sites-enabled/default',
   ensure => abstent,
   require => Package['nginx'],
+}
+
+file { 'ssl-certificate':
+  path => '/etc/ssl/beam.local/beam.local.crt',
+  ensure => file,
+  replace => true,
+  source => 'puppet:///modules/ssl/beam.local.crt',
+  require => Package['nginx'],
+}
+
+file { 'ssl-key':
+  path => '/etc/ssl/beam.local/beam.local.key',
+  ensure => file,
+  replace => true,
+  source => 'puppet:///modules/ssl/beam.local.key',
+  require => File['ssl-key'],
+  notify => Service['nginx'],
 }
 
 file { 'default-nginx-enable':
