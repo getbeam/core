@@ -44,7 +44,7 @@ file { 'ssl-key':
   ensure => file,
   replace => true,
   source => 'puppet:///modules/ssl/beam.local.key',
-  require => File['ssl-key'],
+  require => File['ssl-certificate'],
   notify => Service['nginx'],
 }
 
