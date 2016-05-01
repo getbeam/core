@@ -4,7 +4,7 @@ const { Router } = require('express');
 const routes = Router();
 
 routes.get('/', (req, res) => {
-  res.send("oh helol!!");
+  res.send('oh hello!!');
 });
 
 module.exports = routes;

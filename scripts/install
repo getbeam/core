@@ -200,5 +200,5 @@ say(good('You can access beam locally through'));
 say(good('    https://beam.local'));
 say('');
 say(good('If you want beam to auto-reload while developing, run'));
-say(good('    npm run auto-reload'));
+say(good('    npm run watch'));
 stop(); // just to be sure
