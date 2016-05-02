@@ -8,6 +8,6 @@ server.use('/v1', v1);
 
 exports.listen = () => {
   server.listen(3000, () => {
-    console.log('Hello!');
+    console.log(`beam-core (re)loaded`);
   });
 };

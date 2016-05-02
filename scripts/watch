@@ -62,7 +62,7 @@ var putSecondLine = function putSecondLine(s) {
 // Reload app on server
 function reload() {
   putFirstLine('Reloading...');
-  ssh.exec('pm2 reload 0', function (err, stream) {
+  ssh.exec('pm2 reload beam-core', function (err, stream) {
     if (err) throw err;
     stream
       .on('close', function (code, signal) {

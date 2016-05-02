@@ -6,11 +6,7 @@ const { User } = require('../lib/db');
 const routes = Router();
 
 routes.get('/', (req, res) => {
-  User.create({
-    username: 'blablabla'
-  }).then(bla => {
-    res.json(bla);
-  });
+  res.send('It works!');
 });
 
 module.exports = routes;

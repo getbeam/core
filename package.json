@@ -6,8 +6,9 @@
   "main": "app/src/index.js",
   "scripts": {
     "start": "pm2 start process.json",
-    "bootstrap": "scripts/install",
+    "setup": "scripts/install",
     "watch": "scripts/watch",
+    "logs": "scripts/log",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

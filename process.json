@@ -1,8 +1,10 @@
 {
   "apps" : [
     {
+      "name": "beam-core",
       "script": "app/src/index.js",
       "node_args": "--harmony",
+      "log_date_format" : "YYYY-MM-DD HH:mm",
       "env": {
         "NODE_ENV": "development",
       }
