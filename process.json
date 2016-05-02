@@ -2,7 +2,7 @@
   "apps" : [
     {
       "script": "app/src/index.js",
-      "node_args" : "--harmony",
+      "node_args": "--harmony",
       "env": {
         "NODE_ENV": "development",
       }
