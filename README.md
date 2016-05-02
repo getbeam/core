@@ -31,7 +31,9 @@
 npm run setup
 ```
 
-This will set up everything for you. Our friendly installer will explain everything. It can automatically configure the hostname, SSH and SSL. Before it will change something in your configurations, it will explain the necessary steps and give you the choice to do it yourself or let the installer do it. But don't panic, these are all simple configurations. Nothing crazy.
+This will set up everything for you. Our friendly installer will explain everything. It can automatically configure the hostname, SSH and SSL. At the end you'll be able to request https://beam.local and have a full functioning beam core available.
+
+Before it will change something in your configurations, it will explain the necessary steps and give you the choice to do it yourself or let the installer do it. But don't panic, these are all simple configurations. Nothing crazy.
 
 *Note: The setup will call `vagrant up`, which installs and configures the Vagrant Box (Virtual Machine). It's completely normal if the first `vagrant up` takes at least 10 minutes. It's also normal if you see some red output. Red output doesn't automatically mean something is failing; often deprecations or progress is streamed to stderr. If the setup fails, Vagrant will tell you it failed.*
 
