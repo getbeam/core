@@ -66,7 +66,7 @@ You also can directly execute `scripts/log`.
 
 ### Vagrant Box
 
-Everything related to Vagrants CLI explained here is way more detailed in explained in [Vagrant's documentation](https://www.vagrantup.com/docs/cli/).
+Everything related to Vagrant's CLI explained here is way more detailed in explained in [Vagrant's documentation](https://www.vagrantup.com/docs/cli/).
 
 #### Shutting down
 
