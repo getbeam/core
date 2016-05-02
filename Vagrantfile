@@ -19,6 +19,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder "./", "/opt/beam", type: "nfs"
 
+  config.vm.network "forwarded_port", guest: 5432, host: 5432, auto_correct: true
+
   config.vm.provision "shell", path: "vagrant/install.sh"
 
   config.vm.provision "puppet" do |puppet|
