@@ -7,7 +7,7 @@ const startTime = new Date();
 
 require('dotenv').config();
 
-const listen = require('./server').listen;
+const listen = require('./app').listen;
 const Database = require('../lib/database');
 
 Promise.resolve()

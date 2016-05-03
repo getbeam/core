@@ -44,7 +44,7 @@ class Models {
    * @return {Array} model directory with file name.
    */
   _fullModelPaths(paths) {
-    const MODELS_DIRECTORY = path.resolve(__dirname, '..', 'models');
+    const MODELS_DIRECTORY = path.resolve(__dirname, '..', 'src', 'models');
     return paths.map(p => path.join(MODELS_DIRECTORY, p));
   }
 }

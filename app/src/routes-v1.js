@@ -1,12 +1,12 @@
-const { Router } = require('express');
+'use strict';
 
-const { User } = require('../lib/db');
+const { Router } = require('express');
 
 // eslint-disable-next-line new-cap
 const routes = Router();
 
 routes.get('/', (req, res) => {
-  res.send('It works!');
+  res.send('Hello!');
 });
 
 module.exports = routes;
