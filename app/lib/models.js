@@ -45,7 +45,7 @@ class Models {
    */
   _fullModelPaths(paths) {
     const MODELS_DIRECTORY = path.resolve(__dirname, '..', 'src', 'models');
-    return paths.map(p => path.join(MODELS_DIRECTORY, p));
+    return paths.map(p => path.join(MODELS_DIRECTORY, `${p}-model`));
   }
 }
 
