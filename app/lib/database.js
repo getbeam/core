@@ -11,7 +11,7 @@ const sequelize = new Sequelize('beam', 'beam', 'securepassword', {
 const models = new Models(sequelize);
 
 /** Utility Class for database management */
-class DB {
+class Database {
   /**
    * Get instance of orm.
    * @return {Object} Sequelize Instance.
@@ -29,4 +29,4 @@ class DB {
   }
 }
 
-module.exports = DB;
+module.exports = Database;
