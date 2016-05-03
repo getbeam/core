@@ -3,6 +3,7 @@
   "rules": {
     "func-names": ["off"],
     "comma-dangle": ["off"],
-    "no-param-reassign": ["off"]
+    "no-param-reassign": ["off"],
+    "wrap-iife": ["error", "inside"]
   }
 }

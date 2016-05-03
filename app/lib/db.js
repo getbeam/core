@@ -1,30 +1,32 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const Sequelize = require('sequelize');
+const Models = require('./models');
 
 const sequelize = new Sequelize('beam', 'beam', 'securepassword', {
   host: 'localhost',
   dialect: 'postgres'
 });
-const db = exports;
 
-db.sequelize = sequelize;
+const models = new Models(sequelize);
 
-
-fs
-  .readdirSync(__dirname)
-  .filter(file => (file.indexOf('.') !== 0) && (file !== 'db.js'))
-  .forEach(file => {
-    const model = sequelize.import(path.join(__dirname, file));
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(model => {
-  if ('associate' in db[model]) {
-    db[model].associate(db);
+/** Utility Class for database management */
+class DB {
+  /**
+   * Get instance of orm.
+   * @return {Object} Sequelize Instance.
+   */
+  static get orm() {
+    return sequelize;
   }
-});
 
-exports.Sequelize = Sequelize;
+  /**
+   * Get all models.
+   * @return {Object} Instance of Model Class.
+   */
+  static get models() {
+    return models;
+  }
+}
+
+module.exports = DB;
