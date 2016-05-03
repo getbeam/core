@@ -2,7 +2,7 @@
   "apps" : [
     {
       "name": "beam-core",
-      "script": "app/src/index.js",
+      "script": "app/src/startup.js",
       "node_args": "--harmony",
       "log_date_format" : "YYYY-MM-DD HH:mm",
       "env": {
