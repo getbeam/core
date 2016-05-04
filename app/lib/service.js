@@ -35,6 +35,10 @@ class Service {
   param(name) {
     return this.req.params[name];
   }
+
+  status(code) {
+    return this.req.status(code);
+  }
 }
 
 module.exports = Service;

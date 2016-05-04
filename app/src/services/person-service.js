@@ -1,19 +1,27 @@
 'use strict';
 
 const Service = require('../../lib/service');
-const { Person } = require('../../lib/database').models;
+const PersonController = require('../controllers/person-controller');
 
 /** Service for Person Routes */
 class PersonService extends Service {
-  read() {
-    Person.findOne({
-      id: this.param('id')
-    }).then(person => {
-      this.json(person);
-    }).catch(ex => {
-      this.res.status(404).json(ex);
-    });
+  get() {
+    PersonController.byId(this.param('id'))
+      .then(person => {
+        this.json(person);
+      }).catch(ex => {
+        this.next(ex);
+      });
   }
+
+  /*post() {
+    PersonController.create()
+      .then(person => {
+        this.status(201).json(person);
+      }).catch(ex => {
+        this.next(ex);
+      });
+  }*/
 }
 
 module.exports = PersonService;

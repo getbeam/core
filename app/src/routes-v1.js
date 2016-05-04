@@ -7,7 +7,10 @@ const PersonService = require('./services/person-service');
 const routes = Router();
 
 routes.get('/persons/:id',
-  PersonService.call('read')
+  PersonService.call('get')
+);
+routes.post('/person',
+  PersonService.call('post')
 );
 
 module.exports = routes;
