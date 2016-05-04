@@ -1,14 +1,13 @@
 'use strict';
 
 const { Router } = require('express');
-const PersonController = require('./controllers/person-controller');
+const PersonService = require('./services/person-service');
 
 // eslint-disable-next-line new-cap
 const routes = Router();
 
 routes.get('/persons/:id',
-  PersonController.call('read')
+  PersonService.call('read')
 );
-//routes.post('/persons', PersonController.create);
 
 module.exports = routes;

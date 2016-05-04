@@ -1,9 +1,9 @@
 'use strict';
 
-/** Controller for web requests */
-class Controller {
+/** Service Class for web requests */
+class Service {
   /**
-   * Creates a controller.
+   * Creates a service.
    * @param  {Object} req - Express' request Object
    * @param  {Object} res - Express' response Object
    * @param  {Function} next Express' next Function
@@ -15,9 +15,9 @@ class Controller {
   }
 
   /**
-   * Creates a new instance of the controller.
+   * Creates a new instance of the Service.
    *
-   * Usage: MyController.call('methodName', arguments)
+   * Usage: MyService.call('methodName', arguments)
    * @param  {string} methodName - Method name to call after instantiation.
    * @param  {arguments} ...args - More arguments to pass to callee.
    * @return {Function} Anonymous function returning new instance.
@@ -37,4 +37,4 @@ class Controller {
   }
 }
 
-module.exports = Controller;
+module.exports = Service;
