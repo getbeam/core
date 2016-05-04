@@ -4,6 +4,7 @@
     "func-names": ["off"],
     "comma-dangle": ["off"],
     "no-param-reassign": ["off"],
-    "wrap-iife": ["error", "inside"]
+    "wrap-iife": ["error", "inside"],
+    "arrow-body-style": ["error", "always"]
   }
 }

@@ -9,7 +9,7 @@ const routes = Router();
 routes.get('/persons/:id',
   PersonService.call('get')
 );
-routes.post('/person',
+routes.post('/persons',
   PersonService.call('post')
 );
 

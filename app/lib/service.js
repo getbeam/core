@@ -37,7 +37,11 @@ class Service {
   }
 
   status(code) {
-    return this.req.status(code);
+    return this.res.status(code);
+  }
+
+  body(name) {
+    return this.req.body[name];
   }
 }
 
