@@ -29,7 +29,7 @@ class Service {
   }
 
   json(data) {
-    this.res.json(data);
+    return this.res.json(data);
   }
 
   param(name) {
