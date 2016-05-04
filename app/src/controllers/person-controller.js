@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const async = require('async');
-const { Person } = require('../../lib/database').models;
+const async = require("async");
+const { Person } = require("../../lib/database").models;
 
 class PersonController {
   static byId(id) {

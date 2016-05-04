@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 class ConflictError extends Error {
   constructor(message, key) {

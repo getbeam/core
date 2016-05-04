@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const Service = require('../../lib/service');
-const ConflictError = require('../../lib/errors/conflict');
-const PersonController = require('../controllers/person-controller');
+const Service = require("../../lib/service");
+const ConflictError = require("../../lib/errors/conflict");
+const PersonController = require("../controllers/person-controller");
 
 /** Service for Person Routes */
 class PersonService extends Service {
   get() {
-    PersonController.byId(this.param('id'))
+    PersonController.byId(this.param("id"))
       .then(person => {
         this.json(person);
       }).catch(ex => {
@@ -17,8 +17,8 @@ class PersonService extends Service {
 
   post() {
     const userData = {
-      name: this.body('name'),
-      email: this.body('email')
+      name: this.body("name"),
+      email: this.body("email")
     };
 
     PersonController
@@ -31,8 +31,8 @@ class PersonService extends Service {
         }
 
         throw new ConflictError(
-          'The user could not be created. emailAddress is already created',
-          'email'
+          "The user could not be created. emailAddress is already created",
+          "email"
         );
       })
       .then(() => {

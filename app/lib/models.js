@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const path = require('path');
+const path = require("path");
 
 /** Utility Class for Model Management */
 class Models {
@@ -12,10 +12,10 @@ class Models {
   constructor(sequelize) {
     const models = {};
     const forbiddenModelNames = [
-      'sequelize'
+      "sequelize"
     ];
     const modelPaths = this._fullModelPaths([
-      'person'
+      "person"
     ]);
 
     modelPaths.forEach(p => {
@@ -30,7 +30,7 @@ class Models {
 
     // Create model associations
     Object.keys(models).forEach(modelName => {
-      if ('associate' in models[modelName]) {
+      if ("associate" in models[modelName]) {
         models[modelName].associate(models);
       }
     });
@@ -44,8 +44,10 @@ class Models {
    * @return {Array} model directory with file name.
    */
   _fullModelPaths(paths) {
-    const MODELS_DIRECTORY = path.resolve(__dirname, '..', 'src', 'models');
-    return paths.map(p => path.join(MODELS_DIRECTORY, `${p}-model`));
+    const MODELS_DIRECTORY = path.resolve(__dirname, "..", "src", "models");
+    return paths.map(p => {
+      return path.join(MODELS_DIRECTORY, `${p}-model`);
+    });
   }
 }
 

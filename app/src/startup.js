@@ -5,10 +5,10 @@
 
 const startTime = new Date();
 
-require('dotenv').config();
+require("dotenv").config();
 
-const listen = require('./app').listen;
-const Database = require('../lib/database');
+const listen = require("./app").listen;
+const Database = require("../lib/database");
 
 Promise.resolve()
   .then(Database.orm.sync())
