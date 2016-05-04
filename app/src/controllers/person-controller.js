@@ -1,20 +1,21 @@
 'use strict';
 
+const Controller = require('../../lib/controller');
 const { Person } = require('../../lib/database').models;
 
-class PersonController {
-  static read(req, res) {
+/** Controller managing Person Model */
+class PersonController extends Controller {
+  read() {
     Person.findOne({
-      id: req.params.id
+      id: this.param('id')
     }).then(person => {
-      console.log(person);
-      res.json({ hello: 'world' });
-    }).catch(e => {
-      console.error(e);
-      res.status(404).send('nooo!');
+      this.json(person);
+    }).catch(ex => {
+      this.res.status(404).json(ex);
     });
   }
 
+  // @deprec
   static create(req, res) {
     Person.build({
       id: Math.ceil(Math.random() * 10000),
