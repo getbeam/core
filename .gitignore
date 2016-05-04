@@ -1,0 +1,10 @@
+# Environment Variables
+.env
+
+# Misc
+node_modules
+npm-debug.log
+logs
+
+# VM
+.vagrant

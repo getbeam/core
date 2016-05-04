@@ -1,0 +1,204 @@
+#!/usr/bin/env node
+
+/* eslint-disable */
+
+var cp = require('child_process');
+var path = require('path');
+var stepcount = 0;
+
+function execSync(cmd, args) {
+  args = args || {};
+  var opts = {};
+  if (!args.quiet) opts.stdio = [0, 1, 2];
+  try {
+    cp.execSync(cmd, opts);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function run(cmd, args) {
+  args = args || {};
+  if (args.dry) return true;
+  return execSync(cmd, args);
+}
+
+function runShhh(cmd, args) {
+  args = args || {};
+  if (args.dry) return true;
+  args.quiet = true;
+  return execSync(cmd, args);
+}
+
+function say(sth) {
+  console.log(sth);
+  if (sleep) sleep.usleep(100000);
+}
+
+function step(name) {
+  stepcount++;
+  if (good) {
+    say(good('\n===> Step ' + stepcount + ': ' + name));
+  } else {
+    say('\n===> Step ' + stepcount + ': ' + name);
+  }
+}
+
+function stop() {
+  process.exit();
+}
+
+// ==> START!!!
+
+say('Hi there!');
+say('We\'re now going to setup the beam-core locally step by step. Everything will be explained.');
+say('DON\'T PANIC');
+
+step('Installing npm dev-dependencies');
+
+say('Before we start, I\'m going to install the dev dependencies for you. They are required to run this setup.');
+
+if (!run('npm install --only=dev')) {
+  say('Something went wront. Aborting.');
+}
+
+var chalk = require('chalk');
+var dnsSync = require('dns-sync');
+var prompt = require('readline-sync');
+var sleep = require('sleep');
+var packagejson = require(__dirname + '/../package.json');
+var good = chalk.green;
+var warn = chalk.yellow;
+var errr = chalk.red;
+var info = chalk.blue;
+
+say(good('✔ Installed dev-dependencies'));
+
+// ==> check vagrant
+step('Checking Vagrant');
+
+if (!runShhh('vagrant --version')) {
+  say(errr('It seems like you don\'t have Vagrant installed!'));
+  say(errr('We need Vagrant to run beam in a virtual machine.'));
+  say(errr('Please download and install Vagrant from:'));
+  say(errr('    https://www.vagrantup.com/downloads.html'));
+  stop();
+}
+say(good('✔ Vagrant looks ok.'));
+
+
+// ==> vagrant up
+step('Starting Vagrant Box');
+
+say(good('This might take a while.'));
+say(good('NOTE: Some red text is normal.'));
+say(good('NOTE: Vagrant might ask you for your password. This is completely normal.'));
+
+if (!run('vagrant up --provision')) {
+  say(info('===== Ending with Vagrant\'s output ====='));
+  say(errr('Uh oh. Could not start vagrant machine. Something went wrong.'));
+  say(errr('Please check the errors in Vagrant\'s output and maybe open an issue in'));
+  say('    ' + packagejson.bugs.url);
+  stop();
+}
+
+say(good('✔ Vagrant Box installed and running.'));
+
+step('Hostname');
+say(good('I\'m checking if the hostname beam.local is available...'));
+say(good('(This might take a few seconds)'));
+
+if (!dnsSync.resolve('beam.local')) {
+  say(good('The hostname beam.local is not yet available on your machine.'));
+  say(good('Without this step you can\'t request beam.local.'));
+  say('');
+  say('I could do that, if you want to. The following steps will be executed:');
+  say('    Step 1: Adding the following line at the end of /etc/hosts:');
+  say('            [blank line]');
+  say('            # Beam Local Development Machine');
+  say('            192.168.25.113 beam.local');
+  say('');
+  if (prompt.keyInYN('Do you want me to do that? : ')) {
+    say(good('This might need your password. This is completely normal.'));
+    if (run('sudo -s -- \'echo "\n\n# Beam Local Development Machine\n192.168.25.113 beam.local" >> /etc/hosts\'')) {
+      say(good('✔ Added Hostname'));
+    } else {
+      say(errr('Error when adding hostname.'));
+      say(errr('Add the following line to /etc/hosts:'));
+      say(errr('    192.168.25.113 beam.local'));
+    }
+  } else {
+    say(warn('No problem! But you really need to do this step.'));
+    say(warn('Add the following line to /etc/hosts:'));
+    say(warn('    192.168.25.113 beam.local'));
+  }
+} else {
+  say(good('✔ Hostname available'));
+}
+
+
+// ==> vagrant ssh-config
+
+step('Vagrant SSH Config');
+say(good('I\'m checking if your ssh is already configured...'));
+
+if (!runShhh('grep -q "beambox" ~/.ssh/config')) {
+  say(good('It seems like ssh for beam isn\'t configured. I\'ve expected that.'));
+  say(good('Without this step the auto-reload won\'t work!'));
+  say('');
+  say('I could configure it, if you want to. The following steps will be executed:');
+  say('    Step 1: Checking if ~/.ssh/config exists.');
+  say('            If not, a new file will be created.');
+  say('    Step 2: Running `vagrant ssh-config`.');
+  say('            This will generate the config for ssh.');
+  say('    Step 3: Adding the generated config to ~/.ssh/config');
+  say('');
+  if (prompt.keyInYN('Do you want me to do that? : ')) {
+    if (!run('test -f ~/.ssh/config')) { // I know, `touch ...` would be enough
+      run('touch ~/.ssh/config'); // But I want to be on the safe side
+    }
+    if (!run('grep -q "beambox" ~/.ssh/config')) {
+      runShhh('(echo "\n" && vagrant ssh-config --host beambox) >> ~/.ssh/config');
+    }
+    say(good('✔ SSH configured'));
+  } else {
+    say(warn('Ok! But in order to use auto-reload, execute the steps explained above.'));
+  }
+} else {
+  say(good('✔ SSH already configured'));
+}
+
+step('Trusting the SSL Certificate');
+if (!runShhh('security find-certificate -a -c beam.local | grep beam.local')) {
+  say(good('The SSL Certificate needs to be trusted for the best experience.'));
+  say(good('You can trust it manually by visiting https://beam.local in Safari.'));
+  say('');
+  say('I could add it to your Keychain without Safari, if you want to.');
+  say('The following command will be executed:');
+  var cerpath = path.resolve(__dirname, '..', 'vagrant', 'files', 'beam.local.cer');
+  var cercmd = 'sudo security add-trusted-cert -d -r trustRoot -k "/Library/Keychains/System.keychain" "' + cerpath + '"';
+  say('    ' + cercmd);
+  if (prompt.keyInYN('Do you want me to do that? : ')) {
+    if (!run(cercmd)) {
+      say(errr('Damn. Couldn\'t do that for some reason.'));
+    } else {
+      say(good('✔ Added certificate as trusted to you Keychain'))
+    }
+  } else {
+    say(warn('That\'s fine.'));
+    say(warn('Please visit https://beam.local in Safari and set the certificate to "Always trust"'));
+  }
+} else {
+  say(good('✔ Certificate already trusted'));
+}
+
+step('Finished!');
+say(good('Yeah, we\'re done!'));
+say('');
+say(good('You can access beam locally through'));
+say(good('    https://beam.local'));
+say('');
+say(good('If you want beam to auto-reload while developing, run'));
+say(good('    npm run watch'));
+stop(); // just to be sure

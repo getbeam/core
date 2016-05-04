@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+
+/* eslint-disable */
+
+var SSHClient = require('ssh2').Client;
+var sshConfig = require('ssh-config');
+var fs = require('fs');
+var chokidar = require('chokidar');
+var chalk = require('chalk');
+
+var ssh = new SSHClient();
+var sshConnected = false;
+
+// get correct config for beambox from .ssh/config
+var configFile = fs.readFileSync(process.env.HOME + '/.ssh/config', 'utf8');
+var config = sshConfig.parse(configFile).query('beambox');
+
+// Watch every .js and .json file in /app
+var watcher = chokidar.watch('app/**/*.{js,json}', { cwd: __dirname + '/..'});
+
+// gracefully exit
+var exitHandler = function () {
+  if (sshConnected) {
+    console.log('\nClosing SSH Connection');
+    ssh.end();
+  }
+  if (watcher) {
+    console.log('Stop Watching');
+    watcher.close();
+  }
+  console.log('Bye!');
+  process.exit();
+}
+
+// Prepare tty for capturing keys and stuff
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+process.on('SIGINT', exitHandler);
+
+var cursorAtLine = 0;
+
+// write sth to stdout
+var write = function write(s) {
+  process.stdout.write(s);
+}
+
+// Go one line down, one line up, save position and restore saved position
+// So now, we have two lines. Saved cursor position is first line, first char
+write('\033E\033[1A\0337\0338');
+
+// Put sth into first line
+var putFirstLine = function putFirstLine(s) {
+  write('\0338\033[K' + s);
+}
+
+// Put sth into second line
+var putSecondLine = function putSecondLine(s) {
+  write('\0338\033[1B\033[K' + s);
+}
+
+// Reload app on server
+function reload() {
+  putFirstLine('Reloading...');
+  ssh.exec('pm2 reload beam-core', function (err, stream) {
+    if (err) throw err;
+    stream
+      .on('close', function (code, signal) {
+        putFirstLine('Watching...');
+        putSecondLine(chalk.green('Reloaded: ' + new Date().toString()));
+      })
+      .on('data', function (data) {
+
+        // Intentionally left blank
+      });
+  });
+}
+
+// Open ssh connection
+ssh.connect({
+  host: config.HostName,
+  username: config.User,
+  privateKey: fs.readFileSync(config.IdentityFile),
+  port: config.Port
+});
+
+// When ssh connection is open, start file-watching and key-capturing
+ssh.on('ready', function () {
+  sshConnected = true;
+  putFirstLine('Watching...');
+
+  // file watcher
+  watcher.on('change', function (path) {
+    reload();
+  });
+
+  // key watcher
+  process.stdin.on('data', function(key) {
+    if (key === 'r') reload();
+    if (key === '\u0003') exitHandler();
+    if (key === 'q') exitHandler();
+  });
+});

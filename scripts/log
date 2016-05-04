@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+/* eslint-disable */
+
+var SSHClient = require('ssh2').Client;
+var sshConfig = require('ssh-config');
+var fs = require('fs');
+
+var ssh = new SSHClient();
+var activestream;
+var sshConnected = false;
+
+// get correct config for beambox from .ssh/config
+var configFile = fs.readFileSync(process.env.HOME + '/.ssh/config', 'utf8');
+var config = sshConfig.parse(configFile).query('beambox');
+
+
+// gracefully exit
+var exitHandler = function () {
+  if (sshConnected) {
+    console.log('\nClosing SSH Connection');
+    activestream.end();
+    ssh.end();
+  }
+  console.log('Bye!');
+  process.exit();
+}
+
+process.stdin.resume();
+process.on('SIGINT', exitHandler);
+
+// Open ssh connection
+ssh.connect({
+  host: config.HostName,
+  username: config.User,
+  privateKey: fs.readFileSync(config.IdentityFile),
+  port: config.Port
+});
+
+// When ssh connection is open, start file-watching and key-capturing
+ssh.on('ready', function () {
+  sshConnected = true;
+
+  ssh.exec('pm2 logs beam-core', { pty: true }, function (err, stream) {
+    if (err) throw err;
+    activestream = stream;
+    stream
+      .on('close', function (code, signal) {
+        console.log('Log closed for some reason.');
+        exitHandler();
+      })
+      .on('data', function (data) {
+        process.stdout.write(data);
+      });
+  });
+});

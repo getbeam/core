@@ -1,0 +1,45 @@
+{
+  "name": "beam-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "beam core",
+  "main": "app/src/index.js",
+  "scripts": {
+    "start": "pm2 start process.json",
+    "setup": "scripts/install",
+    "watch": "scripts/watch",
+    "logs": "scripts/log",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Timo Mämecke <maemecketimo@gmail.com> (https://twitter.com/timomeh)",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/getbeam/core"
+  },
+  "bugs": {
+    "url": "https://github.com/getbeam/core/issues"
+  },
+  "devDependencies": {
+    "chalk": "^1.1.3",
+    "chokidar": "^1.4.3",
+    "dns-sync": "^0.1.3",
+    "eslint": "^2.8.0",
+    "eslint-config-airbnb": "^7.0.0",
+    "eslint-plugin-jsx-a11y": "^0.6.2",
+    "eslint-plugin-react": "^4.3.0",
+    "readline-sync": "^1.4.2",
+    "sleep": "^3.0.1",
+    "ssh-config": "^0.2.1",
+    "ssh2": "^0.5.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "dotenv": "^2.0.0",
+    "express": "^4.13.4",
+    "pg": "^4.5.5",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.22.0"
+  }
+}
