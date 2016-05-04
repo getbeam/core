@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-const Sequelize = require('sequelize');
-const Models = require('./models');
+const Sequelize = require("sequelize");
+const Models = require("./models");
 
-const sequelize = new Sequelize('beam', 'beam', 'securepassword', {
-  host: 'localhost',
-  dialect: 'postgres'
+const sequelize = new Sequelize("beam", "beam", "securepassword", {
+  host: "localhost",
+  dialect: "postgres"
 });
 
 const models = new Models(sequelize);
