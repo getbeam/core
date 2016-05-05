@@ -1,7 +1,7 @@
 "use strict";
 
 const Service = require("../../lib/service");
-const ConflictError = require("../../lib/errors/conflict");
+const { ConflictError, NotFoundError } = require("../../lib/errors");
 const PersonController = require("../controllers/person-controller");
 
 /** Service for Person Routes */
@@ -12,9 +12,12 @@ class PersonService extends Service {
   get() {
     PersonController.byId(this.param("id"))
       .then(person => {
-        this.json(person);
+        if (!person) {
+          return this.next(new NotFoundError("User could not be found."));
+        }
+        return this.json(person);
       }).catch(ex => {
-        this.next(ex);
+        return this.next(ex);
       });
   }
 
