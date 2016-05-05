@@ -15,7 +15,8 @@ class Models {
       "sequelize"
     ];
     const modelPaths = this._fullModelPaths([
-      "person"
+      "person",
+      "upload"
     ]);
 
     modelPaths.forEach(p => {

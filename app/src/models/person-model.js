@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = function userModel(sequelize, DataTypes) {
+module.exports = function personModel(sequelize, DataTypes) {
   const Person = sequelize.define("Person", {
     id: {
       type: DataTypes.INTEGER,
@@ -13,6 +13,12 @@ module.exports = function userModel(sequelize, DataTypes) {
     emailAddress: {
       type: DataTypes.STRING,
       unique: true
+    }
+  }, {
+    classMethods: {
+      associate: (models) => {
+        Person.hasMany(models.Upload);
+      }
     }
   });
 
