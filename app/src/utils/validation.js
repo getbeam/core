@@ -17,7 +17,9 @@ class Validation {
       const errors = req.validationErrors();
 
       if (errors) {
-        return next(new BadRequestError("Request is invalid.", errors));
+        const message = "Your request contains wrong data and could not be " +
+          "validated. See meta for more informations.";
+        return next(new BadRequestError(message, errors));
       }
 
       return next();
