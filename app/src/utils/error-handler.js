@@ -1,5 +1,7 @@
 "use strict";
 
+const { NotFoundError } = require("../../lib/errors");
+
 class ErrorHandler {
   constructor(err, req, res, next) {
     this.err = err;
@@ -14,6 +16,12 @@ class ErrorHandler {
   static call() {
     return (err, req, res, next) => {
       return new this(err, req, res, next);
+    };
+  }
+
+  static pass404() {
+    return (req, res, next) => {
+      return next(new NotFoundError());
     };
   }
 
