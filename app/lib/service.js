@@ -12,6 +12,7 @@ class Service {
     this.req = req;
     this.res = res;
     this.next = next;
+    this._result = {};
   }
 
   /**
@@ -64,10 +65,7 @@ class Service {
 
   jsonMainObject(type, data) {
     const obj = this._jsonObject(type, data);
-
-    this._result = this._result || {};
     this._result.data = Object.assign({}, obj);
-
     return this;
   }
 
@@ -79,12 +77,18 @@ class Service {
     return this.json(this._result);
   }
 
+  jsonSuccess() {
+    this._result.success = true;
+    return this;
+  }
+
   param(name) {
     return this.req.params[name];
   }
 
   status(code) {
-    return this.res.status(code);
+    this.res.status(code);
+    return this;
   }
 
   body(name) {

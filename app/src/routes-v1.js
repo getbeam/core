@@ -14,5 +14,8 @@ routes.get("/persons/:id",
 routes.post("/persons",
   PersonService.call("post")
 );
+routes.delete("/persons/:id",
+  PersonService.call("delete")
+);
 
 module.exports = routes;

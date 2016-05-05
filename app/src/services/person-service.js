@@ -7,7 +7,7 @@ const PersonController = require("../controllers/person-controller");
 /** Service for Person Routes */
 class PersonService extends Service {
   /**
-   * HTTP GET resource/:id
+   * HTTP GET persons/:id
    */
   get() {
     PersonController.byId(this.param("id"))
@@ -24,7 +24,7 @@ class PersonService extends Service {
   }
 
   /**
-   * HTTP POST resource/
+   * HTTP POST persons/
    */
   post() {
     const userData = {
@@ -52,10 +52,31 @@ class PersonService extends Service {
         return PersonController.create(userData);
       })
       .then(newPerson => {
-        this.status(201).json(newPerson);
+        this.status(201);
+        this.jsonSuccess();
+        this.jsonMainObject("persons", newPerson.toJSON());
+        return this.send();
       })
       .catch(ex => {
-        this.next(ex);
+        return this.next(ex);
+      });
+  }
+
+  /**
+   * HTTP DELETE persons/:id
+   */
+  delete() {
+    PersonController.deleteById(this.param("id"))
+      .then(found => {
+        if (!found) {
+          return this.next(new NotFoundError());
+        }
+
+        this.jsonSuccess();
+        return this.send();
+      })
+      .catch(ex => {
+        return this.next(ex);
       });
   }
 }

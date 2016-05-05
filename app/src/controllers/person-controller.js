@@ -111,6 +111,31 @@ class PersonController {
       ); // end async.doWhilst
     }); // end Promise
   } // end method create()
+
+  /**
+   * Delete a Person by its Id.
+   * @param  {Integer} id - The person's Id.
+   * @return {Promise} Resolves with true, if Person is deleted and with false,
+   *                   if Person wasn't found.
+   */
+  static deleteById(id) {
+    return new Promise((resolve, reject) => {
+      Person.findById(id)
+        .then(existingPerson => {
+          if (!existingPerson) {
+            return resolve(false);
+          }
+
+          return existingPerson.destroy();
+        })
+        .then(() => {
+          return resolve(true);
+        })
+        .catch(ex => {
+          return reject(ex);
+        });
+    });
+  }
 }
 
 module.exports = PersonController;
