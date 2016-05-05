@@ -28,8 +28,55 @@ class Service {
     };
   }
 
+  _jsonObject(type, data) {
+    let includes = false;
+
+    // parse "include" in query string
+    if (
+      this.req.query.include &&
+      this.req.query.include[type] &&
+      typeof this.req.query.include[type] === "string"
+    ) {
+      includes = this.req.query.include[type].split(",");
+    }
+
+    // Prepare json object
+    const obj = {};
+    const copyData = Object.assign({}, data);
+    delete copyData.id;
+    obj.type = type;
+    obj.id = data.id;
+
+    // Filter included keys, if necessary
+    if (includes) {
+      obj.attributes = {};
+      includes.forEach(key => {
+        if (copyData[key]) {
+          obj.attributes[key] = copyData[key];
+        }
+      });
+    } else {
+      obj.attributes = copyData;
+    }
+
+    return obj;
+  }
+
+  jsonMainObject(type, data) {
+    const obj = this._jsonObject(type, data);
+
+    this._result = this._result || {};
+    this._result.data = Object.assign({}, obj);
+
+    return this;
+  }
+
   json(data) {
     return this.res.json(data);
+  }
+
+  send() {
+    return this.json(this._result);
   }
 
   param(name) {

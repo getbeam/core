@@ -15,7 +15,9 @@ class PersonService extends Service {
         if (!person) {
           return this.next(new NotFoundError("User could not be found."));
         }
-        return this.json(person);
+
+        this.jsonMainObject("persons", person.toJSON());
+        return this.send();
       }).catch(ex => {
         return this.next(ex);
       });
