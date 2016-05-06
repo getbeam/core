@@ -133,7 +133,7 @@ class PersonController {
    */
   static updateById(id, values) {
     return Person.update(values, { where: { id }, returning: true })
-      .then(([rows]) => {
+      .then(([affected, rows]) => {
         return rows[0];
       });
   }
