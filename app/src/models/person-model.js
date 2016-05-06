@@ -18,6 +18,7 @@ module.exports = function personModel(sequelize, DataTypes) {
     classMethods: {
       associate: (models) => {
         Person.hasMany(models.Upload);
+        Person.hasMany(models.LinkedAccount);
       }
     }
   });

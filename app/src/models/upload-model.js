@@ -6,14 +6,14 @@ module.exports = function uploadModel(sequelize, DataTypes) {
       type: DataTypes.UUID,
       unique: true,
       primaryKey: true,
-      defaultValue: sequelize.UUID4
+      defaultValue: DataTypes.UUID4
     },
     title: {
       type: DataTypes.STRING
     }
   }, {
     associate: (models) => {
-      Upload.belognsTo(models.Person, {
+      Upload.belongsTo(models.Person, {
         onDelete: "CASCADE",
         foreignKey: {
           allowNull: false

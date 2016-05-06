@@ -16,7 +16,8 @@ class Models {
     ];
     const modelPaths = this._fullModelPaths([
       "person",
-      "upload"
+      "upload",
+      "linked-account"
     ]);
 
     modelPaths.forEach(p => {
