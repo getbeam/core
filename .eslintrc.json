@@ -6,6 +6,7 @@
     "no-param-reassign": ["off"],
     "wrap-iife": ["error", "inside"],
     "arrow-body-style": ["error", "always"],
-    "quotes": ["error", "double", { "allowTemplateLiterals": true }]
+    "quotes": ["error", "double", { "allowTemplateLiterals": true }],
+    "no-unused-vars": ["error", { "args": "none" }]
   }
 }
