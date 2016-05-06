@@ -6,7 +6,7 @@ module.exports = function authModel(sequelize, DataTypes) {
       type: DataTypes.UUID,
       unique: true,
       primaryKey: true,
-      defaultValue: DataTypes.UUID4
+      defaultValue: DataTypes.UUIDV4
     },
     provider: {
       type: DataTypes.ENUM,
@@ -14,8 +14,8 @@ module.exports = function authModel(sequelize, DataTypes) {
       required: true,
     },
     foreignUserId: {
-      type: DataTypes.BIGINT,
-      required: true
+      type: DataTypes.STRING, // Postgres Integer types are max. signed BIGINT
+      required: true          // but Google uses unsigned BIGINT. So... VARCHAR.
     }
   }, {
     classMethods: {

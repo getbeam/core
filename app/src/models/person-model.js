@@ -17,8 +17,8 @@ module.exports = function personModel(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        Person.hasMany(models.Upload);
-        Person.hasMany(models.LinkedAccount);
+        Person.hasMany(models.Upload, { onDelete: "cascade" });
+        Person.hasMany(models.LinkedAccount, { onDelete: "cascade" });
       }
     }
   });

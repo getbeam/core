@@ -7,10 +7,10 @@ const PersonController = require("../controllers/person-controller");
 /** Service for Person Routes */
 class PersonService extends Service {
   /**
-   * HTTP GET persons/:id
+   * HTTP GET persons/me
    */
   get() {
-    PersonController.byId(this.param("id"))
+    PersonController.byId(this.req.user.id)
       .then(person => {
         if (!person) {
           return this.next(new NotFoundError("User could not be found."));
@@ -32,6 +32,11 @@ class PersonService extends Service {
       email: this.body("email")
     };
 
+    const authData = {
+      provider: this.req.auth_provider,
+      id: this.req.auth_user_id
+    };
+
     // Check if Person with emailAddress is already registered.
     // If not, create new Person and respond with it.
     PersonController
@@ -49,7 +54,7 @@ class PersonService extends Service {
         );
       })
       .then(() => {
-        return PersonController.create(userData);
+        return PersonController.create(userData, authData);
       })
       .then(newPerson => {
         this.status(201);
@@ -63,13 +68,13 @@ class PersonService extends Service {
   }
 
   /**
-   * HTTP DELETE persons/:id
+   * HTTP DELETE persons/me
    */
   delete() {
-    PersonController.deleteById(this.param("id"))
+    PersonController.deleteById(this.req.user.id)
       .then(found => {
         if (!found) {
-          return this.next(new NotFoundError());
+          return this.next(new Error());
         }
 
         this.jsonSuccess();

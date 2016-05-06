@@ -8,15 +8,17 @@ const AuthController = require("./controllers/auth-controller");
 // eslint-disable-next-line new-cap
 const routes = Router();
 
-routes.get("/persons/:id",
+routes.get("/persons/me",
   AuthController.authorize(),
-  Validation.validate("persons/get", "v1"),
+  // Validation.validate("persons/get", "v1"),
   PersonService.call("get")
 );
 routes.post("/persons",
+  AuthController.authenticate(),
   PersonService.call("post")
 );
-routes.delete("/persons/:id",
+routes.delete("/persons/me",
+  AuthController.authorize(),
   PersonService.call("delete")
 );
 

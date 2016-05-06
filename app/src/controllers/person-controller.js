@@ -1,7 +1,9 @@
 "use strict";
 
 const async = require("async");
+const { orm } = require("../../lib/database");
 const { Person } = require("../../lib/database").models;
+const { LinkedAccount } = require("../../lib/database").models;
 
 /** Controller for Person Model */
 class PersonController {
@@ -35,7 +37,7 @@ class PersonController {
    * @param  {Object} newData - The Person's data to store.
    * @return {Promise} Resolves with created Person.
    */
-  static create(newData) {
+  static create(newData, authData) {
     const idRange = { bottom: 999, top: 99999999 };
     const fill = 1000000000;
 
@@ -93,20 +95,32 @@ class PersonController {
         (ex, uniqueId) => {
           if (ex) return reject(ex);
 
-          // Create and store Person
-          return Person
-            .build({
+          let createdPerson;
+
+          return orm.transaction(t => {
+            return Person.create({
               id: uniqueId,
               displayName: newData.name,
               emailAddress: newData.email
-            })
-            .save()
+            }, { transaction: t })
             .then(newPerson => {
-              return resolve(newPerson);
+              createdPerson = newPerson;
+              return LinkedAccount.create({
+                provider: authData.provider,
+                foreignUserId: authData.id,
+                PersonId: newPerson.id
+              }, { transaction: t });
             })
-            .catch(ex2 => {
-              return reject(ex2);
+            .then(savedLinkedAccount => {
+              return createdPerson;
             });
+          })
+          .then(result => {
+            return resolve(result);
+          })
+          .catch(ex2 => {
+            return reject(ex2);
+          });
         }
       ); // end async.doWhilst
     }); // end Promise

@@ -2,6 +2,8 @@
 
 const https = require("https");
 
+const { LinkedAccount, Person } = require("../../lib/database").models;
+
 /** Authentication and Authorization through external providers */
 class AuthController {
   /**
@@ -33,7 +35,8 @@ class AuthController {
         .then(() => {
           return this._checkUser(authUserId, provider);
         })
-        .then(() => {
+        .then(person => {
+          req.user = person;
           return next();
         })
         .catch(ex => {
@@ -55,6 +58,7 @@ class AuthController {
       this._callProvider({ provider, accessToken })
         .then(({ clientId, userId }) => {
           req.auth_user_id = userId;
+          req.auth_provider = provider;
           return this._checkClient(clientId);
         })
         .then(() => {
@@ -142,11 +146,22 @@ class AuthController {
    * // TODO: Implement checkUser
    * @param  {Integer} userId - ID of the user from the auth provider.
    * @param  {string} provider - Name of the provider.
-   * @return {Promise} Resolves when the user is known.
+   * @return {Promise} Resolves with the user.
    */
   static _checkUser(userId, provider) {
-    console.log("User: %s %s", userId, provider);
-    return Promise.resolve();
+    return LinkedAccount.findOne({
+      where: {
+        foreignUserId: userId,
+        provider
+      },
+      include: [Person]
+    })
+    .then(user => {
+      if (!user) {
+        throw new Error("you are not known ");
+      }
+      return user.Person.toJSON();
+    });
   }
 
   /**

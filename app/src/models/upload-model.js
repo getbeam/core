@@ -14,7 +14,6 @@ module.exports = function uploadModel(sequelize, DataTypes) {
   }, {
     associate: (models) => {
       Upload.belongsTo(models.Person, {
-        onDelete: "CASCADE",
         foreignKey: {
           allowNull: false
         }
