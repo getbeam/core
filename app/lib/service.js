@@ -1,5 +1,7 @@
 "use strict";
 
+const humps = require("humps");
+
 /** Service Class for web requests */
 class Service {
   /**
@@ -70,7 +72,7 @@ class Service {
   }
 
   json(data) {
-    return this.res.json(data);
+    return this.res.json(humps.decamelizeKeys(data));
   }
 
   send() {
