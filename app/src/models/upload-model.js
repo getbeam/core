@@ -11,14 +11,6 @@ module.exports = function uploadModel(sequelize, DataTypes) {
     title: {
       type: DataTypes.STRING
     }
-  }, {
-    associate: (models) => {
-      Upload.belongsTo(models.Person, {
-        foreignKey: {
-          allowNull: false
-        }
-      });
-    }
   });
 
   return Upload;

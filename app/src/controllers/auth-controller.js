@@ -143,24 +143,24 @@ class AuthController {
 
   /**
    * STUB: Check if Person is known in the database.
-   * // TODO: Implement checkUser
    * @param  {Integer} userId - ID of the user from the auth provider.
    * @param  {string} provider - Name of the provider.
    * @return {Promise} Resolves with the user.
    */
   static _checkUser(userId, provider) {
-    return LinkedAccount.findOne({
-      where: {
-        foreignUserId: userId,
-        provider
-      },
-      include: [Person]
-    })
+    return Person.findOne(
+      {
+        "LinkedAccounts.foreignUserId": userId,
+        "LinkedAccounts.provider": provider
+      }, {
+        include: [LinkedAccount]
+      }
+    )
     .then(user => {
       if (!user) {
         throw new Error("you are not known ");
       }
-      return user.Person.toJSON();
+      return user.toJSON();
     });
   }
 

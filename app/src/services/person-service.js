@@ -7,7 +7,7 @@ const PersonController = require("../controllers/person-controller");
 /** Service for Person Routes */
 class PersonService extends Service {
   /**
-   * HTTP GET persons/me
+   * GET persons/me
    */
   get() {
     PersonController.byId(this.req.user.id)
@@ -24,14 +24,9 @@ class PersonService extends Service {
   }
 
   /**
-   * HTTP POST persons/
+   * POST persons/
    */
   post() {
-    const userData = {
-      name: this.body("name"),
-      email: this.body("email")
-    };
-
     const authData = {
       provider: this.req.auth_provider,
       id: this.req.auth_user_id
@@ -41,7 +36,7 @@ class PersonService extends Service {
     // If not, create new Person and respond with it.
     PersonController
       .findOne({
-        where: { emailAddress: userData.email }
+        where: { emailAddress: this.body("emailAddress") }
       })
       .then(existingPerson => {
         if (!existingPerson) {
@@ -54,7 +49,7 @@ class PersonService extends Service {
         );
       })
       .then(() => {
-        return PersonController.create(userData, authData);
+        return PersonController.create(this.body(), authData);
       })
       .then(newPerson => {
         this.status(201);
@@ -68,7 +63,26 @@ class PersonService extends Service {
   }
 
   /**
-   * HTTP DELETE persons/me
+   * PATCH persons/me
+   * @return {[type]} [description]
+   */
+  patch() {
+    const values = this.body();
+
+    PersonController.updateById(this.req.user.id, values)
+      .then(updatedPerson => {
+        this.status(200);
+        this.jsonSuccess();
+        this.jsonMainObject("persons", updatedPerson.toJSON());
+        return this.send();
+      })
+      .catch(ex => {
+        return this.next(ex);
+      });
+  }
+
+  /**
+   * DELETE persons/me
    */
   delete() {
     PersonController.deleteById(this.req.user.id)

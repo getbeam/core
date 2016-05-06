@@ -15,6 +15,7 @@ class Service {
     this.res = res;
     this.next = next;
     this._result = {};
+    this.camelBody = humps.camelizeKeys(req.body);
   }
 
   /**
@@ -93,8 +94,12 @@ class Service {
     return this;
   }
 
-  body(name) {
-    return this.req.body[name];
+  body(key) {
+    if (!key) {
+      return this.camelBody;
+    }
+
+    return this.camelBody[key];
   }
 }
 

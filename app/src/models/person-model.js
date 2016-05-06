@@ -17,8 +17,14 @@ module.exports = function personModel(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (models) => {
-        Person.hasMany(models.Upload, { onDelete: "cascade" });
-        Person.hasMany(models.LinkedAccount, { onDelete: "cascade" });
+        Person.hasMany(models.Upload, {
+          onDelete: "cascade",
+          foreignKey: "personId"
+        });
+        Person.hasMany(models.LinkedAccount, {
+          onDelete: "cascade",
+          foreignKey: "personId"
+        });
       }
     }
   });

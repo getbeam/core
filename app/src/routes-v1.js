@@ -17,6 +17,10 @@ routes.post("/persons",
   AuthController.authenticate(),
   PersonService.call("post")
 );
+routes.patch("/persons/me",
+  AuthController.authorize(),
+  PersonService.call("patch")
+);
 routes.delete("/persons/me",
   AuthController.authorize(),
   PersonService.call("delete")

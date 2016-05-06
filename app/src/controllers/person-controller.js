@@ -98,17 +98,16 @@ class PersonController {
           let createdPerson;
 
           return orm.transaction(t => {
-            return Person.create({
-              id: uniqueId,
-              displayName: newData.name,
-              emailAddress: newData.email
-            }, { transaction: t })
+            return Person.create(
+              Object.assign({}, { id: uniqueId }, newData),
+              { transaction: t }
+            )
             .then(newPerson => {
               createdPerson = newPerson;
               return LinkedAccount.create({
                 provider: authData.provider,
                 foreignUserId: authData.id,
-                PersonId: newPerson.id
+                personId: newPerson.id
               }, { transaction: t });
             })
             .then(savedLinkedAccount => {
@@ -125,6 +124,19 @@ class PersonController {
       ); // end async.doWhilst
     }); // end Promise
   } // end method create()
+
+  /**
+   * Update a Person by its Id.
+   * @param  {Integer} id - Person's Id.
+   * @param  {Object} values - Values to update
+   * @return {Promise} Resolves with updated Person.
+   */
+  static updateById(id, values) {
+    return Person.update(values, { where: { id }, returning: true })
+      .then(([rows]) => {
+        return rows[0];
+      });
+  }
 
   /**
    * Delete a Person by its Id.
