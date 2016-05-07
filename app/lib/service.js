@@ -101,6 +101,25 @@ class Service {
 
     return this.camelBody[key];
   }
+
+  sanitize(key, where = "all") {
+    console.log(where, key);
+
+    switch (where) {
+      case "all":
+        return this.req.sanitize(key);
+      case "body":
+        return this.req.sanitizeBody(key);
+      case "query":
+        return this.req.sanitizeQuery(key);
+      case "param":
+        return this.req.sanitizeParams(key);
+      case "header":
+        return this.req.sanitizeHeaders(key);
+      default:
+        return this.req.sanitize(key);
+    }
+  }
 }
 
 module.exports = Service;
