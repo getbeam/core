@@ -133,6 +133,7 @@ class AuthController {
   /**
    * Check if Client is known in the database.
    * // TODO: Maybe Database?
+   * // TODO: throws Error 500
    * @param  {string} clientId - The ID of the client doing the request.
    * @return {Promise} Resolves when the client is known.
    */
@@ -149,6 +150,7 @@ class AuthController {
    * @param  {Integer} userId - ID of the user from the auth provider.
    * @param  {string} provider - Name of the provider.
    * @return {Promise} Resolves with the user.
+   * // TODO: throws error 500
    */
   static _checkUser(userId, provider) {
     return Person.findOne(
