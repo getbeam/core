@@ -16,8 +16,8 @@ server {
     server_name beam.local;
     access_log off;
 
-    ssl_certificate /etc/ssl/beam.local/beam.local.crt;
-    ssl_certificate_key /etc/ssl/beam.local/beam.local.key;
+    ssl_certificate /etc/ssl/beam.local.crt;
+    ssl_certificate_key /etc/ssl/beam.local.key;
 
     location / {
       proxy_set_header X-Real-IP $remote_addr;

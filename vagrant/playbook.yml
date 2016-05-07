@@ -1,0 +1,109 @@
+---
+- hosts: all
+  become: True
+
+  vars:
+    pg_password: securepassword
+
+  tasks:
+    - name: Add NodeSource signing key
+      apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+    - name: Add Node.js 6.x apt repo
+      apt_repository: repo='deb https://deb.nodesource.com/node_6.x trusty main' state=present
+
+    - name: Add PostgreSQL signing key
+      apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+
+    - name: Add PostgreSQL apt repo
+      apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' state=present
+      notify:
+        - apt-get update
+
+    - name: Copy SSL Certificate for beam.local
+      copy: src=files/ssl/beam.local.crt dest=/etc/ssl/beam.local.crt
+
+    - name: Copy SSL Key for beam.local
+      copy: src=files/ssl/beam.local.key dest=/etc/ssl/beam.local.key
+
+    - name: Install nginx
+      apt: name=nginx state=installed
+      notify:
+        - start nginx
+
+    - name: Delete default nginx host
+      file: path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: Copy beam nginx host
+      copy: src=files/nginx/beam.local dest=/etc/nginx/sites-available/
+
+    - name: Enable beam nginx host
+      file: path=/etc/nginx/sites-enabled/beam.local src=/etc/nginx/sites-available/beam.local state=link
+      notify:
+        - restart nginx
+
+    - name: Install PostgreSQL
+      apt: name={{ item }}
+      with_items:
+        - postgresql-client-9.4
+        - libpq-dev
+        - postgresql-9.4
+        - python-psycopg2
+      notify:
+        - start postgresql
+
+    - name: Setup custom PostgreSQL beam user
+      become_user: postgres
+      postgresql_user: name=beam password='{{ pg_password }}' role_attr_flags=SUPERUSER,CREATEDB
+
+    - name: Setup databases
+      become_user: postgres
+      postgresql_db: name='{{ item }}' owner=beam
+      with_items:
+        - beam
+        - beam_test
+
+    - name: Grant privileges for beam user
+      become_user: postgres
+      postgresql_privs: >
+        database={{ item }}
+        privs=SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,CONNECT,TEMP,EXECUTE
+        type=table
+        schema=public
+        obj=ALL_IN_SCHEMA
+        role=beam
+      with_items:
+        - beam
+        - beam_test
+
+    - name: Enable client authentication for PostgreSQL
+      become_user: postgres
+      shell: echo "host all all 0.0.0.0/0 trust" >> /etc/postgresql/9.4/main/pg_hba.conf
+
+    - name: Enable networking for PostgreSQL
+      become_user: postgres
+      shell: echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf
+      notify:
+        - restart postgresql
+
+    - name: Install Node.js
+      apt: name=nodejs state=installed
+
+    - name: Install pm2
+      shell: npm install -g pm2
+
+  handlers:
+    - name: apt-get update
+      apt: update_cache=yes
+
+    - name: start nginx
+      service: name=nginx state=started
+
+    - name: restart nginx
+      service: name=nginx state=restarted
+
+    - name: start postgresql
+      service: name=postgresql state=started enabled=yes
+
+    - name: restart postgresql
+      service: name=postgresql state=restarted

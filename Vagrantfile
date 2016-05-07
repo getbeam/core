@@ -1,12 +1,14 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+INSTALL = <<-SCRIPT
+apt-get install -y software-properties-common
+apt-add-repository -y ppa:ansible/ansible
+apt-get update
+apt-get install -y ansible
+ansible-playbook /opt/beam/vagrant/playbook.yml -e main_user=vagrant -c local -i /opt/beam/vagrant/inventory
+SCRIPT
 
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "hashicorp/precise64"
-
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.hostname = "beambox"
   config.vm.network :private_network, ip: "192.168.25.113"
 
@@ -20,13 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.network "forwarded_port", guest: 5432, host: 5432, auto_correct: true
 
-  config.vm.provision "shell", path: "vagrant/install.sh"
-
-  config.vm.provision "puppet" do |puppet|
-    puppet.manifests_path = "vagrant/puppet/manifests"
-    puppet.manifest_file  = "default.pp"
-    puppet.module_path = "vagrant/puppet/modules"
-  end
+  config.vm.provision "shell", inline: INSTALL
 
   config.vm.provision "shell", path: "vagrant/startup.sh",
     run: "always", privileged: false
