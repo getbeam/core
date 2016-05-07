@@ -1,8 +1,8 @@
 "use strict";
 
 const https = require("https");
-
 const { LinkedAccount, Person } = require("../../lib/database").models;
+const allowedClients = require("../allowed-clients");
 
 /** Authentication and Authorization through external providers */
 class AuthController {
@@ -131,18 +131,21 @@ class AuthController {
   }
 
   /**
-   * STUB: Check if Client is known in the database.
-   * // TODO: Implement checkClient
+   * Check if Client is known in the database.
+   * // TODO: Maybe Database?
    * @param  {string} clientId - The ID of the client doing the request.
    * @return {Promise} Resolves when the client is known.
    */
   static _checkClient(clientId) {
-    console.log("Client id: " + clientId);
-    return Promise.resolve();
+    if (allowedClients.indexOf(clientId) > -1) {
+      return Promise.resolve();
+    }
+
+    return Promise.reject(new Error("Client not allowed"));
   }
 
   /**
-   * STUB: Check if Person is known in the database.
+   * Check if Person is known in the database.
    * @param  {Integer} userId - ID of the user from the auth provider.
    * @param  {string} provider - Name of the provider.
    * @return {Promise} Resolves with the user.
