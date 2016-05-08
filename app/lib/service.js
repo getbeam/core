@@ -1,6 +1,7 @@
 "use strict";
 
 const humps = require("humps");
+const allowedKeys = require("../src/schema-v1");
 
 /** Service Class for web requests */
 class Service {
@@ -10,12 +11,14 @@ class Service {
    * @param  {Object} res - Express' response Object
    * @param  {Function} next Express' next Function
    */
-  constructor(req, res, next) {
+  constructor(req, res, next, calledMethod) {
     this.req = req;
     this.res = res;
     this.next = next;
+    this._calledMethod = calledMethod;
     this._result = {};
-    this.camelBody = humps.camelizeKeys(req.body);
+    this.req.body = this._cleanBody();
+    this.camelBody = humps.camelizeKeys(this.req.body);
   }
 
   /**
@@ -28,8 +31,38 @@ class Service {
    */
   static call(methodName, ...args) {
     return (req, res, next) => {
-      new this(req, res, next)[methodName](args);
+      new this(req, res, next, methodName)[methodName](args);
     };
+  }
+
+  /**
+   * Loops over allowed keys for the request body of the called method
+   * and generates a new object with those keys. Used to clean up the body
+   * to prevent exploits.
+   * @return {Object} The cleaned body object.
+   */
+  _cleanBody() {
+    const cleanedBody = {};
+    const serviceName = this.constructor.name;
+    const method = this._calledMethod;
+    const methodKeys = allowedKeys[serviceName].allowedKeys[method];
+    methodKeys.forEach(key => {
+      if (this.req.body[key]) {
+        cleanedBody[key] = this.req.body[key];
+      }
+    });
+
+    const disallowedKeys = Object.keys(this.req.body).filter(keyInOrig => {
+      return methodKeys.indexOf(keyInOrig) < 0;
+    });
+
+    disallowedKeys.forEach(disallowedKey => {
+      this.jsonAddMeta(
+        "PARAMIGNORE",
+        `The key \`${disallowedKey}\` is not known and thus was neglected.`);
+    });
+
+    return cleanedBody;
   }
 
   _jsonObject(type, data) {
@@ -72,12 +105,22 @@ class Service {
     return this;
   }
 
+  jsonAddMeta(code, info) {
+    this._result.meta = this._result.meta || [];
+    this._result.meta.push({ code, info });
+  }
+
   json(data) {
     return this.res.json(humps.decamelizeKeys(data));
   }
 
   send() {
-    return this.json(this._result);
+    const sortedObject = {
+      success: this._result.success,
+      data: this._result.data,
+      meta: this._result.meta
+    };
+    return this.json(sortedObject);
   }
 
   jsonSuccess() {
