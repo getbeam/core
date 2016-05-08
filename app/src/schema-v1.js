@@ -21,7 +21,8 @@ module.exports = {
       { key: "short_key", as: "short" },
       "file_size",
       "mimetype",
-      "views"
+      "views",
+      "created_at"
     ],
     persons: [
       "display_name",

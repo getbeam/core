@@ -17,8 +17,18 @@ class PersonService extends Service {
         }
 
         this.jsonMainObject("persons", person.toJSON());
+        return person.getUploads({
+          limit: 5,
+          order: [["createdAt", "DESC"]]
+        });
+      })
+      .then(uploads => {
+        uploads.forEach(upload => {
+          this.jsonAddRelationships("uploads", "uploads", upload.toJSON());
+        });
         return this.send();
-      }).catch(ex => {
+      })
+      .catch(ex => {
         return this.next(ex);
       });
   }

@@ -109,6 +109,15 @@ class Service {
     return this;
   }
 
+  jsonAddRelationships(key, type, data) {
+    const obj = this._jsonObject(type, data);
+    const rel = this._result.data.relationships || {};
+    rel[key] = rel[key] || [];
+    rel[key].push(obj);
+    this._result.data.relationships = rel;
+    return this;
+  }
+
   jsonAddRelationship(key, type, data) {
     const obj = this._jsonObject(type, data);
     const rel = this._result.data.relationships || {};
