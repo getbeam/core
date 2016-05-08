@@ -1,7 +1,9 @@
 "use strict";
 
 const { Router } = require("express");
+const upload = require("../lib/upload");
 const PersonService = require("./services/person-service");
+const UploadService = require("./services/upload-service");
 const Validation = require("./utils/validation");
 const AuthController = require("./controllers/auth-controller");
 
@@ -24,6 +26,12 @@ routes.patch("/persons/me",
 routes.delete("/persons/me",
   AuthController.authorize(),
   PersonService.call("delete")
+);
+
+routes.post("/uploads",
+  AuthController.authorize(),
+  upload.single("image"),
+  UploadService.call("post")
 );
 
 module.exports = routes;
