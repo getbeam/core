@@ -14,7 +14,10 @@ module.exports = function uploadModel(sequelize, DataTypes) {
       type: DataTypes.UUID,
       unique: true,
       defaultValue: DataTypes.UUIDV4,
-      required: true
+      required: true,
+      get() {
+        return undefined;
+      }
     },
     fileSize: {
       type: DataTypes.INTEGER,
