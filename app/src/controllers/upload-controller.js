@@ -94,6 +94,11 @@ class UploadController {
     return Upload.findById(id);
   }
 
+  static findByUserId(personId, query) {
+    const q = Object.assign({}, { where: { personId } }, query);
+    return Upload.findAll(q);
+  }
+
   /**
    * Delete the upload from the database and async delete file in Bucket.
    * @param  {Integer} id - Upload ID.

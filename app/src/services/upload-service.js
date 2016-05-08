@@ -51,6 +51,23 @@ class UploadService extends Service {
       return this.next(ex);
     });
   }
+
+  /**
+   * GET /uploads
+   * // TODO: Pagination
+   */
+  list() {
+    UploadController.findByUserId(
+      this.req.user.id,
+      { limit: 10, order: [["createdAt", "DESC"]] }
+    )
+    .then(uploads => {
+      uploads.forEach(upload => {
+        this.jsonMainObjects("uploads", upload.toJSON());
+      });
+      return this.send();
+    });
+  }
 }
 
 module.exports = UploadService;

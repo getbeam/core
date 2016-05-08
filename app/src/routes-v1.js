@@ -28,6 +28,10 @@ routes.delete("/persons/me",
   PersonService.call("delete")
 );
 
+routes.get("/uploads",
+  AuthController.authorize(),
+  UploadService.call("list")
+);
 routes.post("/uploads",
   AuthController.authorize(),
   upload.single("image"),

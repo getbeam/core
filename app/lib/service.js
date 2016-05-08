@@ -103,6 +103,14 @@ class Service {
     return obj;
   }
 
+  jsonMainObjects(type, data) {
+    const obj = this._jsonObject(type, data);
+    const dataArr = this._result.data || [];
+    dataArr.push(obj);
+    this._result.data = dataArr;
+    return this;
+  }
+
   jsonMainObject(type, data) {
     const obj = this._jsonObject(type, data);
     this._result.data = obj;
