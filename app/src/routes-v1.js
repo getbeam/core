@@ -33,5 +33,9 @@ routes.post("/uploads",
   upload.single("image"),
   UploadService.call("post")
 );
+routes.delete("/uploads/:uploadid",
+  AuthController.authorize(),
+  UploadService.call("delete")
+);
 
 module.exports = routes;

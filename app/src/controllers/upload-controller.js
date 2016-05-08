@@ -92,6 +92,46 @@ class UploadController {
     });
   }
 
+  static byId(id) {
+    return Upload.findById(id);
+  }
+
+  /**
+   * Delete the upload from the database and async delete file in Bucket.
+   * @param  {Integer} id - Upload ID.
+   * @return {Promise} Resolves with false, if the upload doesn't exist.
+   *                   Otherwise resolves with true.
+   */
+  static deleteById(id) {
+    return new Promise((resolve, reject) => {
+      let key;
+
+      Upload.findById(id)
+        .then(existingUpload => {
+          if (!existingUpload) {
+            return resolve(false);
+          }
+
+          key = existingUpload.fileKey;
+          return existingUpload.destroy();
+        })
+        .then(() => {
+          // Async delete file in aws.
+          // If it fails, we'll log it, but don't tell the user. The next bulk-
+          // delete will care for it.
+          AWSController.delete(key)
+          .catch(ex => {
+            console.log(`Error in UploadC.deleteById, can't delete AWS ${key}`);
+          });
+
+          return resolve(true);
+        })
+        .catch(ex => {
+          return reject(ex);
+        });
+    });
+  }
+
   /**
    * Delete a file. Meant for async deleting of tmp-file after upload.
    * @param  {String} path - Absolute path to file.

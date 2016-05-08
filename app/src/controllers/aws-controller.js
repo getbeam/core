@@ -33,6 +33,25 @@ class AWSController {
       });
     });
   }
+
+  /**
+   * Delete a file form S3 Bucket.
+   * @param  {String} key - Key of file in Bucket.
+   * @return {Promise} Resolves when file was deleted.
+   */
+  static delete(key) {
+    return new Promise((resolve, reject) => {
+      bucket.deleteObject({
+        Key: key
+      }, (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve();
+      });
+    });
+  }
 }
 
 module.exports = AWSController;

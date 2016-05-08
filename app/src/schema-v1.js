@@ -11,7 +11,8 @@ module.exports = {
   },
   UploadService: {
     allowedKeys: {
-      post: ["title"]
+      post: ["title"],
+      delete: []
     }
   }
 };
