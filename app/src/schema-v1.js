@@ -1,12 +1,17 @@
 "use strict";
 
 module.exports = {
-  "persons/get": {
-    id: {
-      in: "params",
-      isInt: {
-        errorMessage: "Invalid ID"
-      }
+  PersonService: {
+    allowedKeys: {
+      patch: ["display_name", "email_address"],
+      post: ["display_name", "email_address"],
+      get: [],
+      delete: []
+    }
+  },
+  UploadService: {
+    allowedKeys: {
+      post: ["title"]
     }
   }
 };
