@@ -14,5 +14,18 @@ module.exports = {
       post: ["title"],
       delete: []
     }
+  },
+  objectKeys: {
+    uploads: [
+      "title",
+      { key: "short_key", as: "short" },
+      "file_size",
+      "mimetype",
+      "views"
+    ],
+    persons: [
+      "display_name",
+      "email_address"
+    ]
   }
 };

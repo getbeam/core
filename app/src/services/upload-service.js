@@ -15,7 +15,11 @@ class UploadService extends Service {
       this.status(201);
       this.jsonSuccess();
       this.jsonMainObject("uploads", upload.toJSON());
-      this.send();
+      return upload.getPerson();
+    })
+    .then(person => {
+      this.jsonAddRelationship("person", "persons", person.toJSON());
+      return this.send();
     })
     .catch(ex => {
       this.next(ex);

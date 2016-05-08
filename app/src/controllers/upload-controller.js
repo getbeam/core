@@ -1,7 +1,7 @@
 "use strict";
 
 const fs = require("fs");
-const { Upload } = require("../../lib/database").models;
+const { Upload, Person } = require("../../lib/database").models;
 const { orm, randomId, randomKey } = require("../../lib/database");
 const Randomstring = require("../../lib/randomstring");
 const AWSController = require("./aws-controller");
@@ -49,20 +49,18 @@ class UploadController {
       })
       .then(uniqueId => {
         let createdUpload;
+        console.log("UNIQUE ID: ", uniqueId);
 
         return orm.transaction()
         .then(transaction => {
-          return Upload.create(
-            Object.assign({}, {
-              id: uniqueId,
-              title: customTitle || file.originalname,
-              shortKey: uniqueShortKey,
-              personId: user.id,
-              fileSize: file.size,
-              mimetype: file.mimetype
-            }),
-            { transaction }
-          )
+          return Upload.create({
+            id: uniqueId,
+            title: customTitle || file.originalname,
+            shortKey: uniqueShortKey,
+            personId: user.id,
+            fileSize: file.size,
+            mimetype: file.mimetype
+          }, { transaction })
           .then(newUpload => {
             createdUpload = newUpload;
 

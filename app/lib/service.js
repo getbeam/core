@@ -1,7 +1,7 @@
 "use strict";
 
 const humps = require("humps");
-const allowedKeys = require("../src/schema-v1");
+const schema = require("../src/schema-v1");
 
 /** Service Class for web requests */
 class Service {
@@ -45,7 +45,7 @@ class Service {
     const cleanedBody = {};
     const serviceName = this.constructor.name;
     const method = this._calledMethod;
-    const methodKeys = allowedKeys[serviceName].allowedKeys[method];
+    const methodKeys = schema[serviceName].allowedKeys[method];
     methodKeys.forEach(key => {
       if (this.req.body[key]) {
         cleanedBody[key] = this.req.body[key];
@@ -77,31 +77,43 @@ class Service {
       includes = this.req.query.include[type].split(",");
     }
 
-    // Prepare json object
+    // Prepare jsonObject
     const obj = {};
-    const copyData = Object.assign({}, data);
-    delete copyData.id;
     obj.type = type;
     obj.id = data.id;
 
-    // Filter included keys, if necessary
-    if (includes) {
-      obj.attributes = {};
-      includes.forEach(key => {
-        if (copyData[key]) {
-          obj.attributes[key] = copyData[key];
-        }
-      });
-    } else {
-      obj.attributes = copyData;
-    }
+    // Prepare the attributes output.
+    // Only put in attributes those keys that are defined in the schema.
+    const attributes = {};
+    schema.objectKeys[type].forEach(key => {
+      let keyobj = key;
+      // the key can be a object { key, as } or a string. The string is a
+      // represenation of { key: string, as: string }.
+      if (typeof keyobj === "string") {
+        keyobj = { key, as: key };
+      }
 
+      // Also, check if includes is set and output only includes
+      if ((includes && includes.indexOf(keyobj.as) > -1) || !includes) {
+        attributes[keyobj.as] = data[humps.camelize(keyobj.key)];
+      }
+    });
+
+    obj.attributes = attributes;
     return obj;
   }
 
   jsonMainObject(type, data) {
     const obj = this._jsonObject(type, data);
-    this._result.data = Object.assign({}, obj);
+    this._result.data = obj;
+    return this;
+  }
+
+  jsonAddRelationship(key, type, data) {
+    const obj = this._jsonObject(type, data);
+    const rel = this._result.data.relationships || {};
+    rel[key] = obj;
+    this._result.data.relationships = rel;
     return this;
   }
 
@@ -146,8 +158,6 @@ class Service {
   }
 
   sanitize(key, where = "all") {
-    console.log(where, key);
-
     switch (where) {
       case "all":
         return this.req.sanitize(key);
