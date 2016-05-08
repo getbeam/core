@@ -17,6 +17,12 @@ module.exports = function authModel(sequelize, DataTypes) {
       type: DataTypes.STRING, // Postgres Integer types are max. signed BIGINT
       required: true          // but Google uses unsigned BIGINT. So... VARCHAR.
     }
+  }, {
+    classMethods: {
+      associate: (models) => {
+        LinkedAccount.belongsTo(models.Person, { foreignKey: "personId" });
+      }
+    }
   });
 
   return LinkedAccount;

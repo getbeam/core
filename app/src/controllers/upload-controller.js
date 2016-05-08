@@ -76,10 +76,11 @@ class UploadController {
             return transaction.commit();
           })
           .catch(ex => {
-            return transaction.rollback();
+            transaction.rollback();
+            throw new Error("Failed to upload file");
           });
         })
-        .then(() => {
+        .then(thing => {
           UploadController._deleteTmpFile(file.path);
           return resolve(createdUpload);
         })

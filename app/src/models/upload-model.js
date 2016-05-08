@@ -14,10 +14,7 @@ module.exports = function uploadModel(sequelize, DataTypes) {
       type: DataTypes.UUID,
       unique: true,
       defaultValue: DataTypes.UUIDV4,
-      required: true,
-      get() {
-        return undefined;
-      }
+      required: true
     },
     fileSize: {
       type: DataTypes.INTEGER,
@@ -36,6 +33,12 @@ module.exports = function uploadModel(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       defaultValue: 0,
       required: true
+    }
+  }, {
+    classMethods: {
+      associate: (models) => {
+        Upload.belongsTo(models.Person, { foreignKey: "personId" });
+      }
     }
   });
 
