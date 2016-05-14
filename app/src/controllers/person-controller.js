@@ -77,7 +77,7 @@ class PersonController {
    */
   static updateById(id, values) {
     return Person.update(values, { where: { id }, returning: true })
-      .then(([affected, rows]) => {
+      .then(([affected, rows]) => { // TODO: jscs - this looks weird
         return rows[0];
       });
   }

@@ -49,7 +49,6 @@ class UploadController {
       })
       .then(uniqueId => {
         let createdUpload;
-        console.log("UNIQUE ID: ", uniqueId);
 
         return orm.transaction()
         .then(transaction => {
@@ -75,7 +74,7 @@ class UploadController {
           })
           .catch(ex => {
             transaction.rollback();
-            throw new Error("Failed to upload file");
+            throw new Error("Failed to upload file"); // TODO: Error 500
           });
         })
         .then(thing => {
@@ -126,6 +125,8 @@ class UploadController {
           .catch(ex => {
             console.log(`Error in UploadC.deleteById, can't delete AWS ${key}`);
           });
+
+          // TODO: Style for println, parseable or so?
 
           return resolve(true);
         })

@@ -18,6 +18,10 @@ class AWSController {
   static upload({ path, mime, key }) {
     const body = fs.createReadStream(path).pipe(zlib.createGzip());
 
+    // TODO: Gzip or not?
+    // TODO: How does AWS Encryption work? No way to check if files are really
+    // encrypted.
+
     return new Promise((resolve, reject) => {
       bucket.upload({
         Body: body,

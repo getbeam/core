@@ -54,7 +54,7 @@ class UploadService extends Service {
 
   /**
    * GET /uploads
-   * // TODO: Pagination
+   * // TODO: Pagination / Sort / Limit / Header-Links
    */
   list() {
     UploadController.findByUserId(
