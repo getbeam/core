@@ -2,6 +2,7 @@
 
 const humps = require("humps");
 const schema = require("../src/schema-v1");
+const JSONResponse = require("./json-response");
 
 /** Service Class for web requests */
 class Service {
@@ -15,6 +16,7 @@ class Service {
     this.req = req;
     this.res = res;
     this.next = next;
+    this.jsonResponse = new JSONResponse();
     this._calledMethod = calledMethod;
     this._result = {};
     this.req.body = this._cleanBody();
@@ -57,50 +59,11 @@ class Service {
     });
 
     disallowedKeys.forEach(disallowedKey => {
-      this.jsonAddMeta(
-        "PARAMIGNORE",
+      this.jsonResponse.addMeta(
         `The key \`${disallowedKey}\` is not known and thus was neglected.`);
     });
 
     return cleanedBody;
-  }
-
-  _jsonObject(type, data) {
-    let includes = false;
-
-    // parse "include" in query string
-    if (
-      this.req.query.include &&
-      this.req.query.include[type] &&
-      typeof this.req.query.include[type] === "string"
-    ) {
-      includes = this.req.query.include[type].split(",");
-    }
-
-    // Prepare jsonObject
-    const obj = {};
-    obj.type = type;
-    obj.id = data.id;
-
-    // Prepare the attributes output.
-    // Only put in attributes those keys that are defined in the schema.
-    const attributes = {};
-    schema.objectKeys[type].forEach(key => {
-      let keyobj = key;
-      // the key can be a object { key, as } or a string. The string is a
-      // represenation of { key: string, as: string }.
-      if (typeof keyobj === "string") {
-        keyobj = { key, as: key };
-      }
-
-      // Also, check if includes is set and output only includes
-      if ((includes && includes.indexOf(keyobj.as) > -1) || !includes) {
-        attributes[keyobj.as] = data[humps.camelize(keyobj.key)];
-      }
-    });
-
-    obj.attributes = attributes;
-    return obj;
   }
 
   jsonMainObjects(type, data) {

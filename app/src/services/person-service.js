@@ -3,6 +3,7 @@
 const Service = require("../../lib/service");
 const { ConflictError, NotFoundError } = require("../../lib/errors");
 const PersonController = require("../controllers/person-controller");
+const JSONData = require("../../lib/json-data");
 
 /** Service for Person Routes */
 class PersonService extends Service {
@@ -10,13 +11,19 @@ class PersonService extends Service {
    * GET persons/me
    */
   get() {
+    const { jsonResponse } = this;
+    jsonResponse.setDataAsSingle();
+    const personJsonData = new JSONData({ type: "persons" });
+
     PersonController.byId(this.req.user.id)
       .then(person => {
         if (!person) {
           return this.next(new NotFoundError("User could not be found."));
         }
 
-        this.jsonMainObject("persons", person.toJSON());
+        personJsonData.setId(person.id);
+        personJsonData.setAttributes(person.toJSON());
+
         return person.getUploads({
           limit: 5,
           order: [["createdAt", "DESC"]]
@@ -24,7 +31,9 @@ class PersonService extends Service {
       })
       .then(uploads => {
         uploads.forEach(upload => {
-          this.jsonAddRelationships("uploads", "uploads", upload.toJSON());
+          const uploadJsonData = new JSONData({ type: "uploads" });
+
+          // TODO: Implement relationship
         });
         return this.send();
       })
