@@ -10,7 +10,7 @@ class JSONData {
     };
   }
 
-  seType(type) {
+  setType(type) {
     this._data.type = type;
     return this;
   }
