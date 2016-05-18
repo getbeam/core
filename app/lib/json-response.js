@@ -57,21 +57,25 @@ class JSONResponse {
   }
 
   toJSON() {
-    const response = humps.decamelizeKeys(Object.assign({}, this._json));
+    const response = Object.assign({}, this._json);
 
-    Object.keys(response.data).forEach(key => {
-      const data = response.data[key];
+    if (response.data) {
+      Object.keys(response.data).forEach(key => {
+        const data = response.data[key];
 
-      if (schema.objectKeys[key].type === "list") {
-        response.data[key] = data.map(d => {
-          return this.schemaize(schema.objectKeys[key].of, d);
-        });
-      } else {
-        response.data[key] = this._schemaize(key, data);
-      }
-    });
+        if (schema.objectKeys[key].type === "list") {
+          response.data[key] = data.map(d => {
+            return this._schemaize(schema.objectKeys[key].of, d);
+          });
+        } else {
+          response.data[key] = this._schemaize(key, data);
+        }
+      });
+    }
 
-    return response;
+    // "objectKeys" are already decamelized. This is mainly for errors/info
+    // and as a last fallback.
+    return humps.decamelizeKeys(response);
   }
 
   _schemaize(type, obj) {

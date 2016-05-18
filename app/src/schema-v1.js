@@ -21,16 +21,16 @@ module.exports = {
     upload: [
       { key: "id", as: "id" },
       { key: "title", as: "title" },
-      { key: "short_key", as: "short" },
-      { key: "file_size", as: "file_size" },
+      { key: "shortKey", as: "short" },
+      { key: "fileSize", as: "file_size" },
       { key: "mimetype", as: "mimetype" },
       { key: "views", as: "views" },
-      { key: "created_at", as: "created_at" }
+      { key: "createdAt", as: "created_at" }
     ],
     person: [
       { key: "id", as: "id" },
-      { key: "display_name", as: "display_name" },
-      { key: "email_address", as: "email_address" }
+      { key: "displayName", as: "display_name" },
+      { key: "emailAddress", as: "email_address" }
     ]
   }
 };
