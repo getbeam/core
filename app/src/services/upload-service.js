@@ -4,22 +4,25 @@ const Service = require("../../lib/service");
 const UploadController = require("../controllers/upload-controller");
 
 /** Service for Upload Routes */
+module.exports =
 class UploadService extends Service {
   /**
    * POST /uploads
    */
   post() {
+    const { response } = this;
+
     const customTitle = this.body("title");
     UploadController.create(this.req.file, this.req.user, customTitle)
     .then(upload => {
-      this.status(201);
-      this.jsonSuccess();
-      this.jsonMainObject("uploads", upload.toJSON());
+      response
+        .setSuccess()
+        .putSingleData("upload", upload);
       return upload.getPerson();
     })
     .then(person => {
-      this.jsonAddRelationship("person", "persons", person.toJSON());
-      return this.send();
+      response.putSingleData("person", person);
+      return this.status(201).send();
     })
     .catch(ex => {
       this.next(ex);
@@ -30,6 +33,9 @@ class UploadService extends Service {
    * DELETE /uploads/:uploadid
    */
   delete() {
+    const { response } = this;
+
+
     // Find Upload by ID, check if it exists and belongs to authorized user,
     // then start the deletion.
     UploadController.byId(this.param("uploadid"))
@@ -44,7 +50,7 @@ class UploadService extends Service {
       return UploadController.deleteById(this.param("uploadid"));
     })
     .then(() => {
-      this.jsonSuccess();
+      response.setSuccess();
       return this.send();
     })
     .catch(ex => {
@@ -57,17 +63,16 @@ class UploadService extends Service {
    * // TODO: Pagination / Sort / Limit / Header-Links
    */
   list() {
+    const { response } = this;
+
+
     UploadController.findByUserId(
       this.req.user.id,
       { limit: 10, order: [["createdAt", "DESC"]] }
     )
     .then(uploads => {
-      uploads.forEach(upload => {
-        this.jsonMainObjects("uploads", upload.toJSON());
-      });
+      response.putListData("uploads", uploads);
       return this.send();
     });
   }
-}
-
-module.exports = UploadService;
+};

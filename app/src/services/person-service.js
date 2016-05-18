@@ -3,7 +3,6 @@
 const Service = require("../../lib/service");
 const { ConflictError, NotFoundError } = require("../../lib/errors");
 const PersonController = require("../controllers/person-controller");
-const JSONData = require("../../lib/json-data");
 
 /** Service for Person Routes */
 class PersonService extends Service {
@@ -11,9 +10,7 @@ class PersonService extends Service {
    * GET persons/me
    */
   get() {
-    const { jsonResponse } = this;
-    jsonResponse.setDataAsSingle();
-    const personJsonData = new JSONData({ type: "persons" });
+    const { response } = this;
 
     PersonController.byId(this.req.user.id)
       .then(person => {
@@ -21,8 +18,7 @@ class PersonService extends Service {
           return this.next(new NotFoundError("User could not be found."));
         }
 
-        personJsonData.setId(person.id);
-        personJsonData.setAttributes(person.toJSON());
+        response.putSingleData("person", person);
 
         return person.getUploads({
           limit: 5,
@@ -30,11 +26,7 @@ class PersonService extends Service {
         });
       })
       .then(uploads => {
-        uploads.forEach(upload => {
-          const uploadJsonData = new JSONData({ type: "uploads" });
-
-          // TODO: Implement relationship
-        });
+        response.putListData("uploads", uploads);
         return this.send();
       })
       .catch(ex => {
@@ -46,6 +38,8 @@ class PersonService extends Service {
    * POST persons/
    */
   post() {
+    const { response } = this;
+
     const authData = {
       provider: this.req.auth_provider,
       id: this.req.auth_user_id
@@ -71,10 +65,11 @@ class PersonService extends Service {
         return PersonController.create(this.body(), authData);
       })
       .then(newPerson => {
-        this.status(201);
-        this.jsonSuccess();
-        this.jsonMainObject("persons", newPerson.toJSON());
-        return this.send();
+        response
+          .setSuccess()
+          .putSingleData("person", newPerson);
+
+        return this.status(201).send();
       })
       .catch(ex => {
         return this.next(ex);
@@ -86,13 +81,16 @@ class PersonService extends Service {
    * @return {[type]} [description]
    */
   patch() {
+    const { response } = this;
+
     const values = this.body();
 
     PersonController.updateById(this.req.user.id, values)
       .then(updatedPerson => {
-        this.status(200);
-        this.jsonSuccess();
-        this.jsonMainObject("persons", updatedPerson.toJSON());
+        response
+          .setSuccess()
+          .putSingleData("person", updatedPerson);
+
         return this.send();
       })
       .catch(ex => {
@@ -104,13 +102,15 @@ class PersonService extends Service {
    * DELETE persons/me
    */
   delete() {
+    const { response } = this;
+
     PersonController.deleteById(this.req.user.id)
       .then(found => {
         if (!found) {
           return this.next(new Error());
         }
 
-        this.jsonSuccess();
+        response.setSuccess();
         return this.send();
       })
       .catch(ex => {

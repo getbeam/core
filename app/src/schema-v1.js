@@ -17,17 +17,20 @@ module.exports = {
     }
   },
   objectKeys: {
-    uploads: [
-      "title",
+    uploads: { type: "list", of: "upload" },
+    upload: [
+      { key: "id", as: "id" },
+      { key: "title", as: "title" },
       { key: "short_key", as: "short" },
-      "file_size",
-      "mimetype",
-      "views",
-      "created_at"
+      { key: "file_size", as: "file_size" },
+      { key: "mimetype", as: "mimetype" },
+      { key: "views", as: "views" },
+      { key: "created_at", as: "created_at" }
     ],
-    persons: [
-      "display_name",
-      "email_address"
+    person: [
+      { key: "id", as: "id" },
+      { key: "display_name", as: "display_name" },
+      { key: "email_address", as: "email_address" }
     ]
   }
 };

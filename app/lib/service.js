@@ -16,9 +16,8 @@ class Service {
     this.req = req;
     this.res = res;
     this.next = next;
-    this.jsonResponse = new JSONResponse();
     this._calledMethod = calledMethod;
-    this._result = {};
+    this.response = new JSONResponse();
     this.req.body = this._cleanBody();
     this.camelBody = humps.camelizeKeys(this.req.body);
   }
@@ -66,58 +65,8 @@ class Service {
     return cleanedBody;
   }
 
-  jsonMainObjects(type, data) {
-    const obj = this._jsonObject(type, data);
-    const dataArr = this._result.data || [];
-    dataArr.push(obj);
-    this._result.data = dataArr;
-    return this;
-  }
-
-  jsonMainObject(type, data) {
-    const obj = this._jsonObject(type, data);
-    this._result.data = obj;
-    return this;
-  }
-
-  jsonAddRelationships(key, type, data) {
-    const obj = this._jsonObject(type, data);
-    const rel = this._result.data.relationships || {};
-    rel[key] = rel[key] || [];
-    rel[key].push(obj);
-    this._result.data.relationships = rel;
-    return this;
-  }
-
-  jsonAddRelationship(key, type, data) {
-    const obj = this._jsonObject(type, data);
-    const rel = this._result.data.relationships || {};
-    rel[key] = obj;
-    this._result.data.relationships = rel;
-    return this;
-  }
-
-  jsonAddMeta(code, info) {
-    this._result.meta = this._result.meta || [];
-    this._result.meta.push({ code, info });
-  }
-
-  json(data) {
-    return this.res.json(humps.decamelizeKeys(data));
-  }
-
   send() {
-    const sortedObject = {
-      success: this._result.success,
-      data: this._result.data,
-      meta: this._result.meta
-    };
-    return this.json(sortedObject);
-  }
-
-  jsonSuccess() {
-    this._result.success = true;
-    return this;
+    this.res.json(this.response.toJSON());
   }
 
   param(name) {

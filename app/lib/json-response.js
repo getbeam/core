@@ -1,55 +1,92 @@
 "use strict";
 
+const humps = require("humps");
+const schema = require("../src/schema-v1");
+
+// TODO: Documentation
+
+module.exports =
 class JSONResponse {
   constructor() {
     this._json = {
+      success: undefined,
+      error: undefined,
       data: undefined,
-      errors: undefined,
-      meta: undefined
+      info: undefined
     };
   }
 
-  setDataAsList() {
-    this._json.data = [];
+  setSuccess() {
+    this._json.success = true;
     return this;
   }
 
-  setDataAsSingle() {
-    this._json.data = {};
+  setError(err) {
+    this._json.error = err;
     return this;
   }
 
-  setData(jsonData) {
-    this._json.data = jsonData;
-    return this;
-  }
+  putSingleData(key, data) {
+    this._prepareData();
 
-  addData(jsonData) {
-    this._json.data.push(jsonData);
-    return this;
-  }
-
-  addMeta(metaObj) {
-    if (!this._json.meta) {
-      this._json.meta = [];
+    if (data && data.toJSON) {
+      data = data.toJSON();
     }
-
-    this._json.meta.push(metaObj);
+    this._json.data[key] = data;
     return this;
   }
 
-  addError(errorObj) {
-    if (!this._json.errors) {
-      this._json.errors = [];
-    }
+  putListData(key, data = []) {
+    this._prepareData();
 
-    this._json.errors.push(errorObj);
+    if (data[0] && data[0].toJSON) {
+      data = data.map(d => {
+        return d.toJSON();
+      });
+    }
+    this._json.data[key] = data;
+    return this;
+  }
+
+  addToListData(key, data) {
+    if (!(key in this._json.data)) {
+      throw new Error("Key is not found");
+    }
+    this._json.data[key].push(data);
     return this;
   }
 
   toJSON() {
-    return this._json;
-  }
-}
+    const response = humps.decamelizeKeys(Object.assign({}, this._json));
 
-module.exports = JSONResponse;
+    Object.keys(response.data).forEach(key => {
+      const data = response.data[key];
+
+      if (schema.objectKeys[key].type === "list") {
+        response.data[key] = data.map(d => {
+          return this.schemaize(schema.objectKeys[key].of, d);
+        });
+      } else {
+        response.data[key] = this._schemaize(key, data);
+      }
+    });
+
+    return response;
+  }
+
+  _schemaize(type, obj) {
+    const keys = schema.objectKeys[type];
+    const ret = {};
+    keys.forEach(k => {
+      ret[k.as] = obj[k.key];
+    });
+
+    return ret;
+  }
+
+  _prepareData() {
+    if (!this._json.data) {
+      this._json.data = {};
+    }
+  }
+};
